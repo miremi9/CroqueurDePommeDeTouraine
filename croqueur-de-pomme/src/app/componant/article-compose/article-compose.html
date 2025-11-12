@@ -1,0 +1,64 @@
+<div class="modal__backdrop" (click)="onBackdropClick()"></div>
+<div class="modal__window" role="dialog" aria-modal="true">
+  <h3 class="modal__title">{{ article ? "Modifier l'article" : "Nouvel article" }}</h3>
+  <form (ngSubmit)="onSubmit()" class="modal__form">
+    <label class="modal__label">
+      <span>Titre</span>
+      <input class="modal__input" type="text" [(ngModel)]="title" name="title" required />
+    </label>
+    <label class="modal__label">
+      <span>Contenu</span>
+      <textarea class="modal__textarea" [(ngModel)]="content" name="content" rows="8" required></textarea>
+    </label>
+    <div class="upload">
+      <input id="compose-file-input" class="upload__input" type="file" multiple (change)="onFileSelect($event)" />
+      <label class="upload__btn" for="compose-file-input">
+        <span class="upload__icon" aria-hidden="true">
+          <!-- Icône fichier (SVG) -->
+          <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm4 18H6V4h7v5h5v11z"/></svg>
+        </span>
+        <span class="upload__text">Ajouter des fichiers</span>
+      </label>
+    </div>
+
+    @if (article && existingIllustrations.length) {
+      <div class="files-list">
+        @for (illustration of existingIllustrations; track illustration.uuid) {
+          <div class="file-item">
+            <span class="file-item__icon" aria-hidden="true">
+              <!-- Icône fichier générique -->
+              <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm4 18H6V4h7v5h5v11z"/></svg>
+            </span>
+            <span class="file-item__name">{{ illustration.fileName }}</span>
+            <button type="button" class="file-item__remove" (click)="removeExisting(illustration.uuid)" title="Supprimer le fichier">✕</button>
+          </div>
+        }
+      </div>
+    }
+
+    @if (selectedFiles.length) {
+      <div class="files-list">
+        @for (file of selectedFiles; track $index) {
+          <div class="file-item">
+            <span class="file-item__icon" aria-hidden="true">
+              @if (isImageFile(file)) {
+                <!-- Icône image -->
+                <svg viewBox="0 0 24 24"><path d="M21 19V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2ZM8.5 11.5A2.5 2.5 0 1 1 11 9a2.5 2.5 0 0 1-2.5 2.5Zm3.5 2 2.5 3h-9L9 13l2 2Z"/></svg>
+              } @else {
+                <!-- Icône fichier -->
+                <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-6-6zm4 18H6V4h7v5h5v11z"/></svg>
+              }
+            </span>
+            <span class="file-item__name">{{ file.name }}</span>
+          </div>
+        }
+      </div>
+    }
+    <div class="modal__actions">
+      <button type="button" class="modal__btn" (click)="close.emit()">Annuler</button>
+      <button type="submit" class="modal__btn modal__btn--primary">{{ article ? 'Mettre à jour' : 'Publier' }}</button>
+    </div>
+  </form>
+</div>
+
+

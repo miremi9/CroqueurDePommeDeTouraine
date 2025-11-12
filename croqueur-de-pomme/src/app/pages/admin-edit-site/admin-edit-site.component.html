@@ -1,0 +1,103 @@
+<div class="admin-page">
+  <h1>Configuration du site</h1>
+
+  <div *ngIf="loading" class="state state--info">
+    Chargement des paramètres...
+  </div>
+
+  <div *ngIf="!loading" class="content">
+    <div *ngIf="errorMessage" class="state state--error">
+      {{ errorMessage }}
+    </div>
+
+    <div *ngIf="successMessage" class="state state--success">
+      {{ successMessage }}
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="submit()" class="site-form">
+      <div class="form-row">
+        <label for="titre">Titre du site</label>
+        <input
+          id="titre"
+          type="text"
+          formControlName="titre"
+          placeholder="Nom du site"
+        />
+        <small class="input-help">
+          Utilisé dans l'en-tête et dans les métadonnées.
+        </small>
+      </div>
+
+      <div class="form-row">
+        <label for="basDePage">Contenu du bas de page</label>
+        <textarea
+          id="basDePage"
+          rows="8"
+          formControlName="basDePage"
+          placeholder="Texte ou HTML du pied de page"
+        ></textarea>
+        <small class="input-help">
+          Vous pouvez utiliser du HTML simple (liens, retours à la ligne...).
+        </small>
+      </div>
+
+      <div class="form-row form-row--colors">
+        <div>
+          <label for="couleurPrincipale">Couleur principale</label>
+          <input
+            id="couleurPrincipale"
+            type="color"
+            formControlName="couleurPrincipale"
+          />
+        </div>
+        <div>
+          <label for="couleurSecondaire">Couleur secondaire</label>
+          <input
+            id="couleurSecondaire"
+            type="color"
+            formControlName="couleurSecondaire"
+          />
+        </div>
+      </div>
+
+      <div class="form-row">
+        <label for="logo">Logo</label>
+        <input
+          id="logo"
+          type="file"
+          accept="image/*"
+          (change)="onLogoSelected($event)"
+        />
+        <small class="input-help">
+          Laissez vide pour conserver le logo actuel.
+        </small>
+        <button
+          type="button"
+          class="link-reset"
+          *ngIf="hasLogo"
+          (click)="onRemoveLogo()"
+        >
+          Supprimer le logo
+        </button>
+      </div>
+
+      <div *ngIf="logoPreview.length" class="logo-preview">
+        <p class="logo-preview__title">Aperçu du logo</p>
+        <div class="logo-preview__list">
+          <img
+            *ngFor="let logo of logoPreview; index as i"
+            [src]="logo"
+            [alt]="'Logo ' + (i + 1)"
+          />
+        </div>
+      </div>
+
+      <div class="actions">
+        <button type="submit" [disabled]="form.invalid || saving">
+          {{ saving ? 'Enregistrement...' : 'Enregistrer' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+

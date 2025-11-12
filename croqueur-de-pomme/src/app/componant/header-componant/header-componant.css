@@ -1,0 +1,31 @@
+#top-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  background-color: var(--primary-color, #094609);
+  color: var(--text-on-primary, #ffffff);
+  padding: 12px 24px;
+}
+
+.site-title {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  text-align: center;
+  flex: 1;
+}
+
+.logo {
+  height: 64px;
+  width: auto;
+  object-fit: contain;
+}
+
+.logo-left {
+  margin-right: auto;
+}
+
+.logo-right {
+  margin-left: auto;
+}

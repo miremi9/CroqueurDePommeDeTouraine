@@ -1,0 +1,19 @@
+:host {
+  display: block;
+  width: 100%;
+}
+
+.footer-wrapper {
+  background-color: var(--secondary-color, #052b18);
+  color: var(--text-on-secondary, #ffffff);
+  padding: 24px 16px;
+  display: flex;
+  justify-content: center;
+}
+
+.credits {
+  max-width: 960px;
+  text-align: center;
+  font-size: 0.8rem;
+  line-height: 1.6;
+}

@@ -4,6 +4,8 @@ import fr.croqueurdepommetouraine.demo.DAO.UserDAO;
 import fr.croqueurdepommetouraine.demo.business.UserBusiness;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -30,9 +32,9 @@ public class UserRestController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> updateUser(@RequestBody UserDAO userDAO, @PathVariable UUID id) {
+    public ResponseEntity<?> updateUser(@RequestBody UserDAO userDAO, @PathVariable UUID id, @AuthenticationPrincipal UserDetails userConnect) {
         try {
-            UserDAO user = userBusiness.updateUser(id, userDAO);
+            UserDAO user = userBusiness.updateUser(id, userDAO, userConnect);
             return ResponseEntity.ok(user);
         } catch (IllegalArgumentException e) {
             return ResponseEntity

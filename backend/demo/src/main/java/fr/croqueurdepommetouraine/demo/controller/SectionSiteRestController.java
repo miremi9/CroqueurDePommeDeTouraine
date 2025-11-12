@@ -51,9 +51,9 @@ public class SectionSiteRestController {
             @RequestBody SectionDAO updatedSection) {
         try {
             SectionDAO section = sectionSiteBusiness.updateSection(id, updatedSection);
-            return ResponseEntity.ok(section); // 200 OK
+            return ResponseEntity.ok(section);
         } catch (NoSuchElementException e) {
-            return ResponseEntity.notFound().build(); // 404 Not Found
+            return ResponseEntity.notFound().build();
         }
     }
 
@@ -61,9 +61,9 @@ public class SectionSiteRestController {
     public ResponseEntity<Void> deleteSection(@PathVariable Long id) {
         boolean deleted = sectionSiteBusiness.deleteSection(id);
         if (deleted) {
-            return ResponseEntity.noContent().build(); // 204 No Content
+            return ResponseEntity.noContent().build();
         } else {
-            return ResponseEntity.notFound().build(); // 404 Not Found
+            return ResponseEntity.notFound().build();
         }
     }
 }

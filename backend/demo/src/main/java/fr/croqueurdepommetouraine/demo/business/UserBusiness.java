@@ -5,6 +5,7 @@ import fr.croqueurdepommetouraine.demo.Entity.RoleEntity;
 import fr.croqueurdepommetouraine.demo.Entity.UserEntity;
 import fr.croqueurdepommetouraine.demo.repository.RoleRepository;
 import fr.croqueurdepommetouraine.demo.repository.UserRepository;
+import fr.croqueurdepommetouraine.demo.security.ROLES;
 import fr.croqueurdepommetouraine.demo.transformer.UserMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -16,6 +17,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -73,10 +75,15 @@ public class UserBusiness implements UserDetailsService {
         return saveUser(newUser);
     }
 
-    public UserDAO updateUser(UUID id, UserDAO userDAO) {
+    public UserDAO updateUser(UUID id, UserDAO userDAO, UserDetails userConnect) {
         UserEntity existingUser = userRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("User not found with id: " + id));
 
+        //Si tentative de destituer admin
+        if (existingUser.getRoles().stream().anyMatch(r -> Objects.equals(r.getNomRole(), ROLES.ROLE_ADMIN)) &&
+                userDAO.getRoles().stream().noneMatch(r -> Objects.equals(r, ROLES.ROLE_ADMIN))) {
+            throw new IllegalArgumentException("Impossible de destituer un admin");
+        }
         UserEntity updatedUser = userMapper.toEntity(userDAO);
         if (updatedUser.getNom() == null) {
             throw new IllegalArgumentException("Username cannot be null");

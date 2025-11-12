@@ -16,6 +16,7 @@ public class SecurityRules {
 
                 SecurityRule.permitAll(HttpMethod.GET, "/articles"),
                 SecurityRule.permitAll(HttpMethod.GET, "/articles/**"),
+                SecurityRule.restricted(HttpMethod.PUT, "/articles/**", ROLES.ROLE_ADMIN, ROLES.ROLE_EDITOR),
                 SecurityRule.restricted(HttpMethod.POST, "/articles", ROLES.ROLE_ADMIN, ROLES.ROLE_MODERATOR, ROLES.ROLE_EDITOR),
                 SecurityRule.restricted(HttpMethod.DELETE, "/articles*", ROLES.ROLE_ADMIN, ROLES.ROLE_MODERATOR, ROLES.ROLE_EDITOR),
 
@@ -29,6 +30,9 @@ public class SecurityRules {
                 SecurityRule.permitAll(HttpMethod.GET, "/sections"),
                 SecurityRule.restricted(HttpMethod.POST, "/sections", ROLES.ROLE_ADMIN),
                 SecurityRule.permitAll(null, "/error"),
+
+                SecurityRule.permitAll(HttpMethod.GET, "/site-body"),
+                SecurityRule.restricted(HttpMethod.PUT, "/site-body", ROLES.ROLE_ADMIN),
 
                 // Par défaut, tout le reste est authentifié
                 SecurityRule.restricted(null, "/**") // null = toutes méthodes

@@ -1,0 +1,57 @@
+<nav class="menu">
+  <div class="menu__container">
+    <ul class="menu__list">
+      <!-- Sections parents avec dropdown -->
+      <li class="menu__item menu__item--has-dropdown" 
+          *ngFor="let menuSection of parentSections"
+          (mouseenter)="onMouseEnterParent(menuSection)"
+          (mouseleave)="onMouseLeaveParent()">
+        <a [routerLink]="'/' + menuSection.section.path" 
+           routerLinkActive="menu__link--active"
+           [routerLinkActiveOptions]="{exact: false}"
+           class="menu__link">{{ menuSection.section.nom }}</a>
+        <ul class="menu__dropdown" 
+            *ngIf="showDropdown === menuSection.section.idSection && menuSection.children.length > 0"
+            (mouseenter)="showDropdown = menuSection.section.idSection"
+            (mouseleave)="showDropdown = null">
+          <li class="menu__dropdown-item" *ngFor="let child of menuSection.children">
+            <a [routerLink]="'/' + child.path" 
+               routerLinkActive="menu__dropdown-link--active"
+               class="menu__dropdown-link">{{ child.nom }}</a>
+          </li>
+        </ul>
+      </li>
+
+      <!-- Sections standalone (sans enfants) -->
+      <li class="menu__item" *ngFor="let section of standaloneSections">
+        <a [routerLink]="'/' + section.path" 
+           routerLinkActive="menu__link--active"
+           [routerLinkActiveOptions]="{exact: false}"
+           class="menu__link">{{ section.nom }}</a>
+      </li>
+
+      <!-- Menu admin -->
+      @if (isAdmin$ | async) {
+        <li class="menu__item" id="admin-menu-section">
+          <a [routerLink]="'/admin/edit-section'" 
+             routerLinkActive="menu__link--active"
+             class="menu__link">Edit Section</a>
+        </li>
+        <li class="menu__item" id="admin-menu-role">
+          <a [routerLink]="'/admin/edit-role'" 
+             routerLinkActive="menu__link--active"
+             class="menu__link">Edit Role</a>
+        </li>
+        <li class="menu__item" id="admin-menu-site">
+          <a [routerLink]="'/admin/edit-site'"
+             routerLinkActive="menu__link--active"
+             class="menu__link">Edit Site</a>
+        </li>
+      }
+    </ul>
+
+    <app-auth-widget />
+  </div>
+</nav>
+
+

@@ -1,0 +1,11 @@
+@if (error) {
+  <div class="error">
+    <p>{{ error }}</p>
+  </div>
+}
+
+@if (section !== -1 && !loading) {
+  <app-file-article [articles]="articles" [idSection]="section" />
+} @else if (section === -1) {
+  <p>Aucune section sélectionnée</p>
+}

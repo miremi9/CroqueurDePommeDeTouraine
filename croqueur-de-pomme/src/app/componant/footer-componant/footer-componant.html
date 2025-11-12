@@ -1,0 +1,5 @@
+<ng-container *ngIf="siteFooter$ | async as siteFooter">
+  <footer class="footer-wrapper">
+    <div class="credits" [innerHTML]="siteFooter.basDePage"></div>
+  </footer>
+</ng-container>

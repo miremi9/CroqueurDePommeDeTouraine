@@ -1,0 +1,61 @@
+/* Conteneur du flux d'articles */
+:host {
+    display: block;
+}
+
+/* Les articles sont empilés verticalement comme un fil d'actualité */
+:host app-article {
+    display: block;
+}
+
+/* espacement entre les cartes d'article */
+:host app-article + app-article {
+    margin-top: 32px;
+}
+
+/* alterner la position de l'image: pair -> image à gauche, impair -> image à droite (par défaut) */
+:host app-article:nth-child(even) .article {
+    flex-direction: row-reverse;
+}
+
+/* mobile: on repasse en colonne pour une meilleure lisibilité */
+@media (max-width: 768px) {
+    :host app-article .article {
+        flex-direction: column;
+        gap: 16px;
+        width: 100%;
+    }
+
+    :host app-article .article-content,
+    :host app-article .illustration,
+    :host app-article .article.no-image .article-content {
+        flex: 0 0 auto;
+        max-width: 100%;
+    }
+}
+
+.background-article {
+    margin: 0 auto;
+    flex-direction: column;
+    gap: 32px;
+    max-width: 80%;
+    flex: 0 0 100%;
+    background-color: color-mix(in srgb, var(--secondary-color, #08bd53) 90%, #fff);
+    padding: 32px;
+    border-radius: 16px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+}
+
+.articles {
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    max-width: 80%;
+}
+
+@media (prefers-color-scheme: dark) {
+    .background-article {
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35);
+    }
+}

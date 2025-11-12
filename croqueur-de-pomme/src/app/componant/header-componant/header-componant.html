@@ -1,0 +1,24 @@
+
+<ng-container *ngIf="siteBody$ | async as siteBody; else fallbackHeader">
+  <div id="top-header">
+    <img
+      *ngIf="siteBody.logoSrc"
+      class="logo logo-left"
+      [src]="siteBody.logoSrc"
+      alt="Logo gauche"
+    />
+    <p class="site-title">{{ siteBody.titre }}</p>
+    <img
+      *ngIf="siteBody.logoSrc"
+      class="logo logo-right"
+      [src]="siteBody.logoSrc"
+      alt="Logo droite"
+    />
+  </div>
+</ng-container>
+<ng-template #fallbackHeader>
+  <div id="top-header">
+    <p class="site-title">Les Croqueurs de Pommes</p>
+  </div>
+</ng-template>
+<app-menu />

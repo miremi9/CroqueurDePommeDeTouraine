@@ -1,0 +1,38 @@
+<div class="menu__auth">
+  @if (!isAuthenticated) {
+    
+    <button class="menu__btn" (click)="openLogin()">Se connecter</button>
+    <button class="menu__btn" (click)="openRegister()">S'inscrire</button>
+  } @else {
+    <p> Bienvenue {{ username }}</p>
+    <button class="menu__btn" (click)="logout()">Se déconnecter</button>
+  }
+</div>
+
+@if (showModal) {
+  <div class="modal__backdrop" (click)="closeModal()"></div>
+  <div class="modal__window" role="dialog" aria-modal="true">
+    <h3 class="modal__title">{{ modalMode === 'login' ? 'Connexion' : 'Inscription' }}</h3>
+    <form (ngSubmit)="onSubmit()" class="modal__form">
+      <label class="modal__label">
+        <span>Nom d'utilisateur</span>
+        <input class="modal__input" type="text" [(ngModel)]="username" name="username" required />
+      </label>
+      <label class="modal__label">
+        <span>Mot de passe</span>
+        <input class="modal__input" type="password" [(ngModel)]="password" name="password" required />
+      </label>
+      <div class="modal__actions">
+        <button type="button" class="modal__btn" (click)="closeModal()">Annuler</button>
+        <button type="submit" class="modal__btn modal__btn--primary">
+          {{ modalMode === 'login' ? 'Se connecter' : "S'inscrire" }}
+        </button>
+      </div>
+      @if (errorMessage) {
+        <p class="modal__error">{{ errorMessage }}</p>
+      }
+    </form>
+  </div>
+}
+
+

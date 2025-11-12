@@ -1,0 +1,15 @@
+<!-- affiche un ensemble d'articles -->
+<div class="background-article">
+  @if (canWrite$ | async) {
+    <div class="file-actions">
+      <button class="file-actions__btn" (click)="openCompose()">Rédiger un nouvel article</button>
+    </div>
+  }
+  <div class="articles">
+    <app-article *ngFor="let article of articles" [article]="article" (edit)="openEdit($event)"></app-article>
+  </div>
+
+  @if (showCompose) {
+    <app-article-compose [idSection]="idSection" [article]="editingArticle" (close)="closeCompose()"></app-article-compose>
+  }
+</div>
