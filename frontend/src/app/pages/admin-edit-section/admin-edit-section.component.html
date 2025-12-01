@@ -1,0 +1,126 @@
+<div class="admin-page">
+  <h1>Gestion des sections</h1>
+
+  <div *ngIf="loading">Chargement...</div>
+  <div *ngIf="error" class="error">{{ error }}</div>
+
+  <div style="margin: 0 0 1rem 0;">
+    <input
+      type="text"
+      placeholder="Filtrer par ID, nom, path ou rôle..."
+      [value]="filterText"
+      (input)="onFilterChange($any($event.target).value)"
+      style="padding: 0.4rem 0.6rem; width: 320px;"
+    />
+  </div>
+
+  <table class="roles-table" *ngIf="!loading">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Nom</th>
+        <th>Path</th>
+        <th>Parent</th>
+        <th *ngFor="let role of roleKeys">{{ role }}</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let section of displayedSections">
+        <td>{{ section.idSection }}</td>
+        <td>
+          <input
+            type="text"
+            [(ngModel)]="section.nom"
+            style="padding: 0.3rem 0.4rem; width: 100%; box-sizing: border-box;"
+          />
+        </td>
+        <td>
+          <input
+            type="text"
+            [(ngModel)]="section.path"
+            style="padding: 0.3rem 0.4rem; width: 100%; box-sizing: border-box;"
+          />
+        </td>
+        <td>
+          <select
+            [(ngModel)]="section.idParent"
+            [disabled]="isSectionParent(section.idSection)"
+            style="padding: 0.3rem 0.4rem; width: 100%; box-sizing: border-box;"
+          >
+            <option [ngValue]="null">Aucun parent</option>
+            <option *ngFor="let parent of getAvailableParentSections(section.idSection)" [ngValue]="parent.idSection">
+              {{ parent.nom }}
+            </option>
+          </select>
+        </td>
+        <td *ngFor="let role of roleKeys" class="center">
+          <input
+            type="checkbox"
+            [checked]="hasRole(section, role)"
+            [disabled]="isAdminRole(role)"
+            [class.disabled-checkbox]="isAdminRole(role)"
+            (change)="onToggle(section, role, $any($event.target).checked)"
+          />
+        </td>
+        <td>
+          <button
+            (click)="save(section)"
+            [disabled]="savingIds.has(section.idSection)"
+          >
+            {{ savingIds.has(section.idSection) ? 'Saving...' : 'Save' }}
+          </button>
+        </td>
+      </tr>
+      <!-- Rangée pour créer une nouvelle section -->
+      <tr style="background-color: #f9fafb;">
+        <td>-</td>
+        <td>
+          <input
+            type="text"
+            placeholder="Nom de la section"
+            [(ngModel)]="newSectionNom"
+            style="padding: 0.3rem 0.4rem; width: 100%; box-sizing: border-box;"
+          />
+        </td>
+        <td>
+          <input
+            type="text"
+            placeholder="Path de la section"
+            [(ngModel)]="newSectionPath"
+            style="padding: 0.3rem 0.4rem; width: 100%; box-sizing: border-box;"
+          />
+        </td>
+        <td>
+          <select
+            [(ngModel)]="newSectionParentId"
+            style="padding: 0.3rem 0.4rem; width: 100%; box-sizing: border-box;"
+          >
+            <option [ngValue]="null">Aucun parent</option>
+            <option *ngFor="let parent of getAvailableParentSections(-1)" [ngValue]="parent.idSection">
+              {{ parent.nom }}
+            </option>
+          </select>
+        </td>
+        <td *ngFor="let role of roleKeys" class="center">
+          <input
+            type="checkbox"
+            [checked]="hasNewRole(role)"
+            [disabled]="isAdminRole(role)"
+            [class.disabled-checkbox]="isAdminRole(role)"
+            (change)="toggleNewRole(role, $any($event.target).checked)"
+          />
+        </td>
+        <td>
+          <button
+            (click)="createSection()"
+            [disabled]="creating || !newSectionNom.trim() || !newSectionPath.trim()"
+          >
+            {{ creating ? 'Création...' : 'Créer' }}
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+

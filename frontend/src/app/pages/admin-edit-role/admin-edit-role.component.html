@@ -1,0 +1,52 @@
+<div class="admin-page">
+  <h1>Gestion des rôles</h1>
+
+  <div *ngIf="loading">Chargement...</div>
+  <div *ngIf="error" class="error">{{ error }}</div>
+
+  <div style="margin: 0 0 1rem 0;">
+    <input
+      type="text"
+      placeholder="Filtrer par ID, nom ou rôle..."
+      [value]="filterText"
+      (input)="onFilterChange($any($event.target).value)"
+      style="padding: 0.4rem 0.6rem; width: 320px;"
+    />
+  </div>
+
+  <table class="roles-table" *ngIf="!loading">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Nom</th>
+        <th *ngFor="let role of roleKeys">{{ role }}</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let user of displayedUsers">
+        <td>{{ user.idUser }}</td>
+        <td>{{ user.nom }}</td>
+        <td *ngFor="let role of roleKeys" class="center">
+          <input
+            type="checkbox"
+            [checked]="hasRole(user, role)"
+            [disabled]="isAdminRoleDisabled(user, role)"
+            [class.disabled-checkbox]="isAdminRoleDisabled(user, role)"
+            (change)="onToggle(user, role, $any($event.target).checked)"
+          />
+        </td>
+        <td>
+          <button
+            (click)="save(user)"
+            [disabled]="savingIds.has(user.idUser)"
+          >
+            {{ savingIds.has(user.idUser) ? 'Saving...' : 'Save' }}
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+
