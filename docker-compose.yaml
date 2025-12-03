@@ -25,15 +25,19 @@ services:
       dockerfile: Dockerfile
     environment:
       SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/${MYSQL_NAME}
+      APP_UPLOAD_DIR: /app/uploads
       SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD}
       SPRING_DATASOURCE_USERNAME: ${MYSQL_USER}
       APP_SECRET_KEY: ${APP_SECRET_KEY}
+
     depends_on:
       db:
         condition: service_healthy
     ports:
       - "8080:8080"
     restart: on-failure
+    volumes:
+      - uploads-data:/app/uploads
 
   # -------------------- Frontend Angular --------------------
   frontend:
@@ -49,3 +53,4 @@ services:
 # -------------------- Volumes --------------------
 volumes:
   db-data:
+  uploads-data:

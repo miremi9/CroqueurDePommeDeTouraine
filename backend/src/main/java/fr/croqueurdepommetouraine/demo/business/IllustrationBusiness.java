@@ -6,7 +6,8 @@ import fr.croqueurdepommetouraine.demo.Entity.IllustrationEntity;
 import fr.croqueurdepommetouraine.demo.repository.IllustrationRepository;
 import fr.croqueurdepommetouraine.demo.tools.FilesGestion;
 import fr.croqueurdepommetouraine.demo.transformer.IllustrationMapper;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -17,11 +18,12 @@ import java.nio.file.Paths;
 import java.util.UUID;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class IllustrationBusiness {
-    private static final String UPLOAD_DIR = "uploads/illustrations";
+    @Value("${app.upload.dir}")
+    private String UPLOAD_DIR;
     private final IllustrationMapper illustrationMapper;
-    IllustrationRepository illustrationRepository;
+    private final IllustrationRepository illustrationRepository;
 
 
     public IllustrationDAO createIllustration(MultipartFile file) throws IOException {
@@ -50,14 +52,6 @@ public class IllustrationBusiness {
 
         IllustrationEntity illustrationEntity = illustrationRepository.findById(idIllustration)
                 .orElseThrow(() -> new RuntimeException("Illustration not found with id: " + idIllustration));
-
-        Path path = Paths.get(illustrationEntity.getPath());
-        path = Paths.get(UPLOAD_DIR).resolve(path);
-
-        return FilesGestion.loadFileAsResource(path);
-    }
-
-    public static Resource getIllustrationByEntity(IllustrationEntity illustrationEntity) throws IOException {
 
         Path path = Paths.get(illustrationEntity.getPath());
         path = Paths.get(UPLOAD_DIR).resolve(path);
