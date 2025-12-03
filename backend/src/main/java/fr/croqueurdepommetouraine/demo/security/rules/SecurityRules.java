@@ -16,7 +16,7 @@ public class SecurityRules {
 
                 SecurityRule.permitAll(HttpMethod.GET, "/articles"),
                 SecurityRule.permitAll(HttpMethod.GET, "/articles/**"),
-                SecurityRule.restricted(HttpMethod.PUT, "/articles/**", ROLES.ROLE_ADMIN, ROLES.ROLE_EDITOR),
+                SecurityRule.restricted(HttpMethod.PUT, "/articles", ROLES.ROLE_ADMIN, ROLES.ROLE_EDITOR),
                 SecurityRule.restricted(HttpMethod.POST, "/articles", ROLES.ROLE_ADMIN, ROLES.ROLE_MODERATOR, ROLES.ROLE_EDITOR),
                 SecurityRule.restricted(HttpMethod.DELETE, "/articles*", ROLES.ROLE_ADMIN, ROLES.ROLE_MODERATOR, ROLES.ROLE_EDITOR),
 

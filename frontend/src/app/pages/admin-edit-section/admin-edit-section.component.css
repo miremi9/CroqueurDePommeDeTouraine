@@ -1,0 +1,67 @@
+.admin-page {
+  padding: 2rem;
+  background-color: var(--secondary-color, #0c6a3a);
+  color: var(--text-on-secondary, #ffffff);
+  min-height: 100vh;
+}
+
+h1 {
+  margin-bottom: 1rem;
+  color: var(--text-on-secondary, #ffffff);
+}
+
+.roles-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #ffffff;
+}
+
+.roles-table th,
+.roles-table td {
+  border: 1px solid #ddd;
+  padding: 0.5rem;
+  color: #000000;
+}
+
+.roles-table thead th {
+  background: #f3f4f6;
+  text-align: left;
+  color: #000000;
+}
+
+.center {
+  text-align: center;
+}
+
+button {
+  padding: 0.4rem 0.8rem;
+}
+
+.error {
+  color: #b91c1c;
+  margin-bottom: 1rem;
+}
+
+.disabled-checkbox {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+input[type="text"],
+select {
+  background-color: #ffffff;
+  color: #000000;
+  border: 1px solid #ddd;
+  padding: 0.3rem 0.4rem;
+  border-radius: 4px;
+}
+
+input[type="text"]::placeholder {
+  color: #999;
+}
+
+select option {
+  background-color: #ffffff;
+  color: #000000;
+}
+

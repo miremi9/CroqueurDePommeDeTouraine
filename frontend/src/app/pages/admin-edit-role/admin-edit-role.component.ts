@@ -11,18 +11,7 @@ import { AuthService } from '../../services/auth.service';
   standalone: true,
   imports: [CommonModule],
   templateUrl: './admin-edit-role.component.html',
-  styles: [
-    `.admin-page { padding: 2rem; }
-     h1 { margin-bottom: 1rem; }
-     .roles-table { width: 100%; border-collapse: collapse; }
-     .roles-table th, .roles-table td { border: 1px solid #ddd; padding: 0.5rem; }
-     .roles-table thead th { background: #f3f4f6; text-align: left; }
-     .center { text-align: center; }
-     button { padding: 0.4rem 0.8rem; }
-     .error { color: #b91c1c; margin-bottom: 1rem; }
-     .disabled-checkbox { opacity: 0.5; cursor: not-allowed; }
-    `
-  ]
+  styleUrl: './admin-edit-role.component.css'
 })
 export class AdminEditRoleComponent {
   users: UserResponse[] = [];

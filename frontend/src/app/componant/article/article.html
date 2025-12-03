@@ -1,31 +1,53 @@
-<div class="article" [class.no-image]="!article.idIllustrationDAOS">
+<div class="article" 
+     [class.has-image]="getImageIds().length > 0"
+     [class.has-files]="getFileIds().length > 0"
+     [class.image-left]="getImageIds().length > 0 && !isEvenIndex()"
+     [class.image-right]="getImageIds().length > 0 && isEvenIndex()">
     <div class="article-content">
-        <div class="article-texte">
-            <h1>{{ article.title }}</h1>
-            <p>{{ article.content }}</p>
-            <p class="article-author">Par {{ article.authorName }}</p>
-        </div>
-        <div class="article-illustration">
-            <ng-container *ngFor="let idIllustration of article.idIllustrationDAOS">
-                <div class="illustration-item">
-                    <img *ngIf="isImage(idIllustration) && getImageUrl(idIllustration)" 
-                         [src]="getImageUrl(idIllustration)" 
-                         [alt]="getFileName(idIllustration)">
-                    <div *ngIf="!isImage(idIllustration)" 
-                         class="file-download-container"
-                         (click)="downloadFile(idIllustration)"
-                         [title]="'Télécharger ' + getFileName(idIllustration)">
-                        <svg class="download-icon" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                            <polyline points="7 10 12 15 17 10"></polyline>
-                            <line x1="12" y1="15" x2="12" y2="3"></line>
-                        </svg>
-                        <span class="file-name">{{ getFileName(idIllustration) }}</span>
-                    </div>
-                </div>
+        <!-- Image à gauche (si index impair) -->
+        <div *ngIf="getImageIds().length > 0 && !isEvenIndex()" class="article-image-container">
+            <ng-container *ngFor="let idIllustration of getImageIds()">
+                <img *ngIf="getImageUrl(idIllustration)" 
+                     [src]="getImageUrl(idIllustration)" 
+                     [alt]="getFileName(idIllustration)"
+                     class="article-image">
             </ng-container>
         </div>
-       
+
+        <!-- Contenu texte -->
+        <div class="article-texte">
+            <h1>{{ article.title }}</h1>
+            <div class="article-content-wrapper">
+                <p class="article-content-text">{{ article.content }}</p>
+                <p class="article-author">Par {{ article.authorName }}</p>
+            </div>
+        </div>
+
+        <!-- Image à droite (si index pair) -->
+        <div *ngIf="getImageIds().length > 0 && isEvenIndex()" class="article-image-container">
+            <ng-container *ngFor="let idIllustration of getImageIds()">
+                <img *ngIf="getImageUrl(idIllustration)" 
+                     [src]="getImageUrl(idIllustration)" 
+                     [alt]="getFileName(idIllustration)"
+                     class="article-image">
+            </ng-container>
+        </div>
+    </div>
+
+    <!-- Fichiers en bas -->
+    <div *ngIf="getFileIds().length > 0" class="article-files">
+        <ng-container *ngFor="let idIllustration of getFileIds()">
+            <div class="file-download-container"
+                 (click)="downloadFile(idIllustration)"
+                 [title]="'Télécharger ' + getFileName(idIllustration)">
+                <svg class="download-icon" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                    <polyline points="7 10 12 15 17 10"></polyline>
+                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+                <span class="file-name">{{ getFileName(idIllustration) }}</span>
+            </div>
+        </ng-container>
     </div>
     
     <div *ngIf="isAdmin$ | async" class="article-edit">

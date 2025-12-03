@@ -18,6 +18,7 @@ public class ArticleEntity {
     @JoinColumn(name = "id_section")
     SectionSiteEntity section;
     String title;
+    @Lob
     String content;
     @ManyToOne(fetch = FetchType.EAGER)
     UserEntity author;

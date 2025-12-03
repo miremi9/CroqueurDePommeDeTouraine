@@ -54,6 +54,36 @@
     max-width: 80%;
 }
 
+.file-actions {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 24px;
+}
+
+.file-actions__btn {
+    padding: 0.75rem 1.5rem;
+    background-color: var(--secondary-color, #0c6a3a);
+    color: var(--text-on-secondary, #ffffff);
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.file-actions__btn:hover {
+    background-color: color-mix(in srgb, var(--secondary-color, #0c6a3a) 85%, #000);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.file-actions__btn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
 @media (prefers-color-scheme: dark) {
     .background-article {
         box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35);

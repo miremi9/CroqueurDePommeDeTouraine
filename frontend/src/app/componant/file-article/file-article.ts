@@ -32,4 +32,15 @@ export class FileArticle {
     this.editingArticle = article;
     this.showCompose = true;
   }
+
+  /**
+   * Retourne les articles triés par date de création (les plus récents en premier)
+   */
+  get sortedArticles(): ArticleModel[] {
+    return [...this.articles].sort((a, b) => {
+      const dateA = new Date(a.dateCreation || 0).getTime();
+      const dateB = new Date(b.dateCreation || 0).getTime();
+      return dateB - dateA; // Tri décroissant (plus récent en premier)
+    });
+  }
 }

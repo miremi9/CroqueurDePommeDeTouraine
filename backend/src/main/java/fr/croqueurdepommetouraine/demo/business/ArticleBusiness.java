@@ -121,4 +121,39 @@ public class ArticleBusiness {
         article.get().setSupprime(true);
         articleRepository.save(article.get());
     }
+
+    public ArticleDAO updateArticle(ArticleDAO articleDAO, String username, List<String> roles) {
+        if (articleDAO.getIdArticle() == null) {
+            throw new RuntimeException("Id de l'article doit être spécifié.");
+        }
+
+        Optional<ArticleEntity> existingOpt = articleRepository.findById(articleDAO.getIdArticle());
+        if (existingOpt.isEmpty()) {
+            throw new RuntimeException("Article not found with id: " + articleDAO.getIdArticle());
+        }
+        ArticleEntity existing = existingOpt.get();
+
+        // Autorisation: admin/modérateur peuvent tout faire, sinon seul l'auteur peut modifier
+        if (!(roles.contains(ROLES.ROLE_ADMIN) || roles.contains(ROLES.ROLE_MODERATOR))) {
+            if (existing.getAuthor() == null || !existing.getAuthor().getNom().equals(username)) {
+                throw new RuntimeException("Access denied: You are not the author of this article.");
+            }
+        }
+
+        // Transformer et valider
+        ArticleEntity toUpdate = articleMapper.toEntity(articleDAO);
+        checkArticleValide(toUpdate);
+        loadIllustration(toUpdate);
+        loadSection(toUpdate);
+
+        // Conserver champs immuables/actuels
+        toUpdate.setIdArticle(existing.getIdArticle());
+        toUpdate.setDateCreation(existing.getDateCreation());
+        toUpdate.setAuthor(existing.getAuthor());
+        toUpdate.setSupprime(existing.getSupprime());
+
+        ArticleEntity saved = articleRepository.save(toUpdate);
+        return articleMapper.toDAO(saved);
+    }
+
 }

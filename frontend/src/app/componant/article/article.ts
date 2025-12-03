@@ -36,6 +36,8 @@ export class Article implements OnChanges, OnDestroy {
     idIllustrationDAOS: []
   };
 
+  @Input() index: number = 0;
+
   @Output() edit = new EventEmitter<ArticleResponse>();
 
   roles$ = this.auth.roles$;
@@ -153,6 +155,18 @@ export class Article implements OnChanges, OnDestroy {
 
   deleteArticle() {
     console.log('Supprimer l\'article');
+  }
+
+  getImageIds(): string[] {
+    return (this.article.idIllustrationDAOS || []).filter(id => this.isImage(id));
+  }
+
+  getFileIds(): string[] {
+    return (this.article.idIllustrationDAOS || []).filter(id => !this.isImage(id));
+  }
+
+  isEvenIndex(): boolean {
+    return this.index % 2 === 0;
   }
 
   removeIllustration(id: string): void {

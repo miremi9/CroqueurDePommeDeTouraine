@@ -1,5 +1,4 @@
 .article {
-    /* Titre + texte à gauche, image à droite */
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
@@ -13,42 +12,99 @@
     border-radius: 12px;
     overflow: hidden;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.12);
+    padding: 24px;
 }
+
 .article-content {
-    /* colonne qui contient texte et image */
-    flex: 1;
     display: flex;
     flex-direction: row;
-    position: relative;
-    align-items: stretch;
-    min-height: fit-content;
+    align-items: flex-start;
+    gap: 24px;
+    width: 100%;
 }
-.article-texte {
+
+/* Si pas d'image, le texte prend toute la place */
+.article:not(.has-image) .article-content {
+    flex-direction: column;
+}
+
+.article:not(.has-image) .article-texte {
+    width: 100%;
+}
+
+/* Si image à gauche (index impair) */
+.article.image-left .article-content {
+    flex-direction: row;
+}
+
+.article.image-left .article-image-container {
     flex: 0 0 40%;
     max-width: 40%;
     display: flex;
     flex-direction: column;
-    align-self: stretch;
-}
-.article-illustration {
-    flex: 0 0 60%;
-    max-width: 60%;
-    display: flex;
-    align-items: flex-start;
-    justify-content: flex-start;
-    flex-wrap: wrap;
     gap: 12px;
-    padding: 12px;
-    min-height: 100px;
 }
 
-.article-illustration img {
+.article.image-left .article-texte {
+    flex: 1;
+}
+
+/* Si image à droite (index pair) */
+.article.image-right .article-content {
+    flex-direction: row-reverse;
+}
+
+.article.image-right .article-image-container {
+    flex: 0 0 40%;
+    max-width: 40%;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.article.image-right .article-texte {
+    flex: 1;
+}
+
+.article-texte {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0;
+}
+
+.article-content-wrapper {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 200px;
+    position: relative;
+}
+
+.article-image-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    align-items: flex-start;
+}
+
+.article-image {
     display: block;
-    width: auto;
+    width: 100%;
     height: auto;
-    max-width: 100%;
     max-height: 500px;
     object-fit: contain;
+    border-radius: 8px;
+}
+
+.article-files {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding-top: 16px;
+    border-top: 1px solid color-mix(in srgb, var(--secondary-color, #057534) 60%, #ffffff);
+    margin-top: auto;
 }
 
 .file-download-container {
@@ -63,6 +119,7 @@
     background: color-mix(in srgb, var(--secondary-color, #057534) 75%, #000);
     transition: opacity 0.2s, transform 0.2s;
     min-width: 120px;
+    border-radius: 8px;
 }
 
 .file-download-container:hover {
@@ -93,14 +150,22 @@
     display: block;
 }
 .article h1 {
+    margin: 0 0 16px 0;
     align-self: stretch;
 }
 
-.article p {
-    /* en dessous du h1 */
-    margin-top: auto;
-    margin-bottom: auto;
+.article-content-text {
+    margin: 0 0 auto 0;
     text-align: justify;
+    flex: 1;
+    white-space: pre-line; /* Préserve les retours à la ligne */
+}
+
+.article-author {
+    margin: 16px 0 0 auto;
+    font-style: italic;
+    text-align: right;
+    align-self: flex-end;
 }
 
 
