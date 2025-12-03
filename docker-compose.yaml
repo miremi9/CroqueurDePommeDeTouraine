@@ -37,7 +37,7 @@ services:
       - "8080:8080"
     restart: on-failure
     volumes:
-      - uploads-data:/app/uploads
+      - ./uploads:/app/uploads
 
   # -------------------- Frontend Angular --------------------
   frontend:
