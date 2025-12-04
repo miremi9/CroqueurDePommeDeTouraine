@@ -25,6 +25,23 @@ export class AccueilPageComponent {
       this.cdr.detectChanges();
     });
   }
+
+  onArticleSaved(article: ArticleResponse) {
+    const existingIndex = this.articles.findIndex(a => a.idArticle === article.idArticle);
+    if (existingIndex !== -1) {
+      const updated = [...this.articles];
+      updated[existingIndex] = article;
+      this.articles = updated;
+    } else {
+      this.articles = [article, ...this.articles];
+    }
+    this.cdr.detectChanges();
+  }
+
+  onArticleDeleted(articleId: string) {
+    this.articles = this.articles.filter(article => article.idArticle !== articleId);
+    this.cdr.detectChanges();
+  }
 }
 
 

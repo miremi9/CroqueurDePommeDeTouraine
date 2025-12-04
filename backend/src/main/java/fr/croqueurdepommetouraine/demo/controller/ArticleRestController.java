@@ -76,8 +76,8 @@ public class ArticleRestController {
 
     }
 
-    @DeleteMapping
-    public ResponseEntity<String> deleteArticle(@RequestParam(value = "idArticle") UUID idArticle) {
+    @DeleteMapping("{idArticle}")
+    public ResponseEntity<String> deleteArticle(@PathVariable UUID idArticle) {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String username = auth.getName();
         List<String> roles = auth.getAuthorities().stream()

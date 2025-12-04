@@ -17,7 +17,6 @@
   <table class="roles-table" *ngIf="!loading">
     <thead>
       <tr>
-        <th>ID</th>
         <th>Nom</th>
         <th>Path</th>
         <th>Parent</th>
@@ -27,7 +26,6 @@
     </thead>
     <tbody>
       <tr *ngFor="let section of displayedSections">
-        <td>{{ section.idSection }}</td>
         <td>
           <input
             type="text"

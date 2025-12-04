@@ -3,7 +3,7 @@ import { ArticleResponse as ArticleModel } from '../../model/article-response.mo
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../services/auth.service';
 import { IllustrationService } from '../../services/illustration.service';
-import { map, combineLatest } from 'rxjs';
+import { map, combineLatest, catchError, of, tap } from 'rxjs';
 import { ArticleResponse } from '../../model/article-response.model';
 import { ArticleService } from '../../services/article.service';
 
@@ -39,6 +39,7 @@ export class Article implements OnChanges, OnDestroy {
   @Input() index: number = 0;
 
   @Output() edit = new EventEmitter<ArticleResponse>();
+  @Output() deleted = new EventEmitter<string>();
 
   roles$ = this.auth.roles$;
   id$ = this.roles$.pipe(map(() => this.auth.getId()));
@@ -154,7 +155,20 @@ export class Article implements OnChanges, OnDestroy {
   }
 
   deleteArticle() {
-    console.log('Supprimer l\'article');
+    this.articleService.deleteArticle(this.article.idArticle).pipe(
+      tap((message) => {
+        console.log('Article supprimé', message);
+        window.alert(message || 'Article supprimé avec succès.');
+        if (this.article.idArticle) {
+          this.deleted.emit(this.article.idArticle);
+        }
+      }),
+      catchError((e) => {
+        console.error('Échec de la suppression de l\'article', e);
+        window.alert('Impossible de supprimer l\'article.');
+        return of(null);
+      })
+    ).subscribe();
   }
 
   getImageIds(): string[] {
@@ -195,5 +209,9 @@ export class Article implements OnChanges, OnDestroy {
       }
     });
   }
+}
+
+function subscribe(arg0: { next: () => void; error: (e: any) => void; }) {
+  throw new Error('Function not implemented.');
 }
 

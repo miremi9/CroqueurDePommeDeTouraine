@@ -1,2 +1,6 @@
-<app-file-article [articles]="articles" />
+<app-file-article
+  [articles]="articles"
+  (articleSaved)="onArticleSaved($event)"
+  (articleDeleted)="onArticleDeleted($event)"
+/>
 

@@ -6,10 +6,21 @@
     </div>
   }
   <div class="articles">
-    <app-article *ngFor="let article of sortedArticles; let i = index" [article]="article" [index]="i" (edit)="openEdit($event)"></app-article>
+    <app-article
+      *ngFor="let article of sortedArticles; let i = index"
+      [article]="article"
+      [index]="i"
+      (edit)="openEdit($event)"
+      (deleted)="handleArticleDeleted($event)"
+    ></app-article>
   </div>
 
   @if (showCompose) {
-    <app-article-compose [idSection]="idSection" [article]="editingArticle" (close)="closeCompose()"></app-article-compose>
+    <app-article-compose
+      [idSection]="idSection"
+      [article]="editingArticle"
+      (close)="closeCompose()"
+      (submitArticle)="handleArticleSaved($event)"
+    ></app-article-compose>
   }
 </div>

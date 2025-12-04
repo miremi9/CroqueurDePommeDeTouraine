@@ -51,8 +51,10 @@ export class ArticleService {
   /**
    * Supprime un article
    */
-  deleteArticle(id: number | string): Observable<void> {
-    return this.http.delete<void>(`${this.apiUrl}/articles/${id}`);
+  deleteArticle(id: number | string): Observable<string> {
+    return this.http.delete(`${this.apiUrl}/articles/${id}`, {
+      responseType: 'text'
+    });
   }
 
   getArticlesBySection(section: number): Observable<ArticleResponse[]> {

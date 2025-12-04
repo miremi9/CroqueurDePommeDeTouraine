@@ -1,4 +1,4 @@
-import { Component, Input, inject } from '@angular/core';
+import { Component, Input, inject, EventEmitter, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ArticleResponse as ArticleModel } from '../../model/article-response.model';
 import { Article as ArticleComponent } from '../article/article';
@@ -15,8 +15,19 @@ import { ArticleCompose } from '../article-compose/article-compose';
 })
 export class FileArticle {
   private auth = inject(AuthService);
-  @Input() articles: ArticleModel[] = [];
+  private _articles: ArticleModel[] = [];
+
+  @Input() set articles(value: ArticleModel[]) {
+    this._articles = Array.isArray(value) ? [...value] : [];
+  }
+
+  get articles(): ArticleModel[] {
+    return this._articles;
+  }
+
   @Input() idSection: number | null = null;
+  @Output() articleSaved = new EventEmitter<ArticleModel>();
+  @Output() articleDeleted = new EventEmitter<string>();
 
   roles$ = this.auth.roles$;
   canWrite$ = this.roles$.pipe(
@@ -37,10 +48,29 @@ export class FileArticle {
    * Retourne les articles triés par date de création (les plus récents en premier)
    */
   get sortedArticles(): ArticleModel[] {
-    return [...this.articles].sort((a, b) => {
+    return [...this._articles].sort((a, b) => {
       const dateA = new Date(a.dateCreation || 0).getTime();
       const dateB = new Date(b.dateCreation || 0).getTime();
       return dateB - dateA; // Tri décroissant (plus récent en premier)
     });
+  }
+
+  handleArticleSaved(article: ArticleModel) {
+    const index = this._articles.findIndex(a => a.idArticle === article.idArticle);
+    if (index !== -1) {
+      this._articles = [
+        ...this._articles.slice(0, index),
+        article,
+        ...this._articles.slice(index + 1),
+      ];
+    } else {
+      this._articles = [article, ...this._articles];
+    }
+    this.articleSaved.emit(article);
+  }
+
+  handleArticleDeleted(articleId: string) {
+    this._articles = this._articles.filter(article => article.idArticle !== articleId);
+    this.articleDeleted.emit(articleId);
   }
 }

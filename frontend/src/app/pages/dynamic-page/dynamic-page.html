@@ -5,7 +5,12 @@
 }
 
 @if (section !== -1 && !loading) {
-  <app-file-article [articles]="articles" [idSection]="section" />
+  <app-file-article
+    [articles]="articles"
+    [idSection]="section"
+    (articleSaved)="onArticleSaved($event)"
+    (articleDeleted)="onArticleDeleted($event)"
+  />
 } @else if (section === -1) {
   <p>Aucune section sélectionnée</p>
 }
