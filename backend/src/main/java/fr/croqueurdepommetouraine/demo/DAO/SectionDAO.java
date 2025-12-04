@@ -11,5 +11,6 @@ public class SectionDAO {
     String path;
     Long idParent;
     Boolean supprimed;
-    List<String> roles;
+    List<String> rolesCanRead;
+    List<String> rolesCanWrite;
 }

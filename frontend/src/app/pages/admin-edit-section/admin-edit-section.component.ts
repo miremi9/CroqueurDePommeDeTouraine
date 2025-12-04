@@ -25,7 +25,8 @@ export class AdminEditSectionComponent {
   newSectionNom: string = '';
   newSectionPath: string = '';
   newSectionParentId: number | null = null;
-  newSectionRoles = new Set<string>([Roles.ADMIN]); // ADMIN toujours présent par défaut
+  newSectionRolesCanRead = new Set<string>([Roles.USER]); // par défaut lisible par USER
+  newSectionRolesCanWrite = new Set<string>([Roles.ADMIN]); // ADMIN peut toujours écrire
   creating = false;
 
   constructor(private routeService: RouteService) {
@@ -40,13 +41,17 @@ export class AdminEditSectionComponent {
       next: (sections) => {
         console.log(sections);
         this.sections = sections || [];
-        // S'assurer que ADMIN est toujours présent dans les rôles de chaque section
+        // Normaliser les listes de rôles de chaque section
         this.sections.forEach(section => {
-          if (!section.roles || !Array.isArray(section.roles)) {
-            section.roles = [];
+          section.rolesCanRead = Array.isArray(section.rolesCanRead) ? section.rolesCanRead : [];
+          section.rolesCanWrite = Array.isArray(section.rolesCanWrite) ? section.rolesCanWrite : [];
+
+          // Garantir quelques valeurs de base
+          if (!section.rolesCanRead.includes(Roles.USER)) {
+            section.rolesCanRead.push(Roles.USER);
           }
-          if (!section.roles.includes(Roles.ADMIN)) {
-            section.roles.push(Roles.ADMIN);
+          if (!section.rolesCanWrite.includes(Roles.ADMIN)) {
+            section.rolesCanWrite.push(Roles.ADMIN);
           }
         });
         this.updateDisplayedSections();
@@ -61,29 +66,49 @@ export class AdminEditSectionComponent {
     });
   }
 
-  hasRole(section: SectionResponse, role: string): boolean {
-    return Array.isArray(section.roles) && section.roles.includes(role);
+  hasRoleCanRead(section: SectionResponse, role: string): boolean {
+    return Array.isArray(section.rolesCanRead) && section.rolesCanRead.includes(role);
   }
 
-  onToggle(section: SectionResponse, role: string, checked: boolean): void {
-    // Ne pas permettre de décocher ADMIN
-    if (role === Roles.ADMIN && !checked) {
-      return;
-    }
+  hasRoleCanWrite(section: SectionResponse, role: string): boolean {
+    return Array.isArray(section.rolesCanWrite) && section.rolesCanWrite.includes(role);
+  }
 
-    const current = new Set(section.roles || []);
+  onToggleCanRead(section: SectionResponse, role: string, checked: boolean): void {
+    const current = new Set(section.rolesCanRead || []);
     if (checked) {
       current.add(role);
     } else {
       current.delete(role);
     }
-    
-    // S'assurer que ADMIN est toujours présent
+
+    // S'assurer que USER peut toujours lire
+    if (!current.has(Roles.USER)) {
+      current.add(Roles.USER);
+    }
+
+    section.rolesCanRead = Array.from(current);
+  }
+
+  onToggleCanWrite(section: SectionResponse, role: string, checked: boolean): void {
+    // Ne pas permettre de décocher ADMIN en écriture
+    if (role === Roles.ADMIN && !checked) {
+      return;
+    }
+
+    const current = new Set(section.rolesCanWrite || []);
+    if (checked) {
+      current.add(role);
+    } else {
+      current.delete(role);
+    }
+
+    // S'assurer que ADMIN peut toujours écrire
     if (!current.has(Roles.ADMIN)) {
       current.add(Roles.ADMIN);
     }
-    
-    section.roles = Array.from(current);
+
+    section.rolesCanWrite = Array.from(current);
   }
 
   save(section: SectionResponse): void {
@@ -97,14 +122,6 @@ export class AdminEditSectionComponent {
       this.error = 'Une section parent ne peut pas avoir de parent.';
       this.savingIds.delete(section.idSection);
       return;
-    }
-    
-    // S'assurer que ADMIN est toujours présent avant la sauvegarde
-    if (!section.roles || !section.roles.includes(Roles.ADMIN)) {
-      if (!section.roles) {
-        section.roles = [];
-      }
-      section.roles.push(Roles.ADMIN);
     }
     
     this.routeService.updateSection(section).subscribe({
@@ -139,7 +156,7 @@ export class AdminEditSectionComponent {
     this.displayedSections = this.sections.filter(s => {
       const byName = (s.nom || '').toLowerCase().includes(text);
       const byPath = (s.path || '').toLowerCase().includes(text);
-      const byRole = Array.isArray(s.roles) && s.roles.some(r => r.toLowerCase().includes(text));
+      const byRole = Array.isArray(s.rolesCanRead) && s.rolesCanRead.some(r => r.toLowerCase().includes(text));
       const byId = String(s.idSection || '').includes(text);
       return byName || byPath || byRole || byId;
     });
@@ -176,26 +193,43 @@ export class AdminEditSectionComponent {
     return parent ? parent.nom : '';
   }
 
-  toggleNewRole(role: string, checked: boolean): void {
+  toggleNewRoleCanRead(role: string, checked: boolean): void {
+    if (checked) {
+      this.newSectionRolesCanRead.add(role);
+    } else {
+      this.newSectionRolesCanRead.delete(role);
+    }
+
+    // S'assurer que USER peut toujours lire
+    if (!this.newSectionRolesCanRead.has(Roles.USER)) {
+      this.newSectionRolesCanRead.add(Roles.USER);
+    }
+  }
+
+  toggleNewRoleCanWrite(role: string, checked: boolean): void {
     // Ne pas permettre de décocher ADMIN
     if (role === Roles.ADMIN && !checked) {
       return;
     }
 
     if (checked) {
-      this.newSectionRoles.add(role);
+      this.newSectionRolesCanWrite.add(role);
     } else {
-      this.newSectionRoles.delete(role);
+      this.newSectionRolesCanWrite.delete(role);
     }
-    
-    // S'assurer que ADMIN est toujours présent
-    if (!this.newSectionRoles.has(Roles.ADMIN)) {
-      this.newSectionRoles.add(Roles.ADMIN);
+
+    // S'assurer que ADMIN peut toujours écrire
+    if (!this.newSectionRolesCanWrite.has(Roles.ADMIN)) {
+      this.newSectionRolesCanWrite.add(Roles.ADMIN);
     }
   }
 
-  hasNewRole(role: string): boolean {
-    return this.newSectionRoles.has(role);
+  hasNewRoleCanRead(role: string): boolean {
+    return this.newSectionRolesCanRead.has(role);
+  }
+
+  hasNewRoleCanWrite(role: string): boolean {
+    return this.newSectionRolesCanWrite.has(role);
   }
 
   createSection(): void {
@@ -207,15 +241,11 @@ export class AdminEditSectionComponent {
     this.creating = true;
     this.error = null;
 
-    // S'assurer que ADMIN est toujours présent
-    if (!this.newSectionRoles.has(Roles.ADMIN)) {
-      this.newSectionRoles.add(Roles.ADMIN);
-    }
-
     const newSection: Partial<SectionResponse> = {
       nom: this.newSectionNom.trim(),
       path: this.newSectionPath.trim(),
-      roles: Array.from(this.newSectionRoles),
+      rolesCanRead: Array.from(this.newSectionRolesCanRead),
+      rolesCanWrite: Array.from(this.newSectionRolesCanWrite),
       idParent: this.newSectionParentId,
       supprimed: false
     };
@@ -228,7 +258,8 @@ export class AdminEditSectionComponent {
         this.newSectionNom = '';
         this.newSectionPath = '';
         this.newSectionParentId = null;
-        this.newSectionRoles = new Set<string>([Roles.ADMIN]);
+        this.newSectionRolesCanRead = new Set<string>([Roles.USER]);
+        this.newSectionRolesCanWrite = new Set<string>([Roles.ADMIN]);
         this.creating = false;
         this.cdr.detectChanges();
       },

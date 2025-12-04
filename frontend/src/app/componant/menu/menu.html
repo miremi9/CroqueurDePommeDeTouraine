@@ -32,20 +32,29 @@
 
       <!-- Menu admin -->
       @if (isAdmin$ | async) {
-        <li class="menu__item" id="admin-menu-section">
-          <a [routerLink]="'/admin/edit-section'" 
-             routerLinkActive="menu__link--active"
-             class="menu__link">Edit Section</a>
-        </li>
-        <li class="menu__item" id="admin-menu-role">
-          <a [routerLink]="'/admin/edit-users'" 
-             routerLinkActive="menu__link--active"
-             class="menu__link">Edit Users</a>
-        </li>
-        <li class="menu__item" id="admin-menu-site">
+        <li class="menu__item menu__item--has-dropdown" id="admin-menu-site"
+            (mouseenter)="onMouseEnterAdmin()"
+            (mouseleave)="onMouseLeaveAdmin()">
           <a [routerLink]="'/admin/edit-site'"
              routerLinkActive="menu__link--active"
              class="menu__link">Edit Site</a>
+          <ul class="menu__dropdown" *ngIf="showAdminDropdown">
+            <li class="menu__dropdown-item" id="admin-menu-section">
+              <a [routerLink]="'/admin/edit-section'" 
+                 routerLinkActive="menu__dropdown-link--active"
+                 class="menu__dropdown-link">Edit Section</a>
+            </li>
+            <li class="menu__dropdown-item" id="admin-menu-role">
+              <a [routerLink]="'/admin/edit-users'" 
+                 routerLinkActive="menu__dropdown-link--active"
+                 class="menu__dropdown-link">Edit Users</a>
+            </li>
+            <li class="menu__dropdown-item" id="admin-menu-role-config">
+              <a [routerLink]="'/admin/edit-role'" 
+                 routerLinkActive="menu__dropdown-link--active"
+                 class="menu__dropdown-link">Edit Roles</a>
+            </li>
+          </ul>
         </li>
       }
     </ul>

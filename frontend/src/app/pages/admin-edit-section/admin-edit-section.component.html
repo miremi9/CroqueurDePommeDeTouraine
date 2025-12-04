@@ -20,59 +20,81 @@
         <th>Nom</th>
         <th>Path</th>
         <th>Parent</th>
+        <th>Type</th>
         <th *ngFor="let role of roleKeys">{{ role }}</th>
         <th>Actions</th>
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let section of displayedSections">
-        <td>
-          <input
-            type="text"
-            [(ngModel)]="section.nom"
-            style="padding: 0.3rem 0.4rem; width: 100%; box-sizing: border-box;"
-          />
-        </td>
-        <td>
-          <input
-            type="text"
-            [(ngModel)]="section.path"
-            style="padding: 0.3rem 0.4rem; width: 100%; box-sizing: border-box;"
-          />
-        </td>
-        <td>
-          <select
-            [(ngModel)]="section.idParent"
-            [disabled]="isSectionParent(section.idSection)"
-            style="padding: 0.3rem 0.4rem; width: 100%; box-sizing: border-box;"
-          >
-            <option [ngValue]="null">Aucun parent</option>
-            <option *ngFor="let parent of getAvailableParentSections(section.idSection)" [ngValue]="parent.idSection">
-              {{ parent.nom }}
-            </option>
-          </select>
-        </td>
-        <td *ngFor="let role of roleKeys" class="center">
-          <input
-            type="checkbox"
-            [checked]="hasRole(section, role)"
-            [disabled]="isAdminRole(role)"
-            [class.disabled-checkbox]="isAdminRole(role)"
-            (change)="onToggle(section, role, $any($event.target).checked)"
-          />
-        </td>
-        <td>
-          <button
-            (click)="save(section)"
-            [disabled]="savingIds.has(section.idSection)"
-          >
-            {{ savingIds.has(section.idSection) ? 'Saving...' : 'Save' }}
-          </button>
-        </td>
-      </tr>
-      <!-- Rangée pour créer une nouvelle section -->
+      <ng-container *ngFor="let section of displayedSections">
+        <!-- Ligne Lecture -->
+        <tr>
+          <td>
+            <input
+              type="text"
+              [(ngModel)]="section.nom"
+              style="padding: 0.3rem 0.4rem; width: 100%; box-sizing: border-box;"
+            />
+          </td>
+          <td>
+            <input
+              type="text"
+              [(ngModel)]="section.path"
+              style="padding: 0.3rem 0.4rem; width: 100%; box-sizing: border-box;"
+            />
+          </td>
+          <td>
+            <select
+              [(ngModel)]="section.idParent"
+              [disabled]="isSectionParent(section.idSection)"
+              style="padding: 0.3rem 0.4rem; width: 100%; box-sizing: border-box;"
+            >
+              <option [ngValue]="null">Aucun parent</option>
+              <option *ngFor="let parent of getAvailableParentSections(section.idSection)" [ngValue]="parent.idSection">
+                {{ parent.nom }}
+              </option>
+            </select>
+          </td>
+          <td>Lecture</td>
+          <td *ngFor="let role of roleKeys" class="center">
+            <input
+              type="checkbox"
+              [checked]="hasRoleCanRead(section, role)"
+              (change)="onToggleCanRead(section, role, $any($event.target).checked)"
+            />
+          </td>
+          <td><!-- pas d'action spécifique sur la ligne Lecture --></td>
+        </tr>
+
+        <!-- Ligne Écriture -->
+        <tr>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td>Écriture</td>
+          <td *ngFor="let role of roleKeys" class="center">
+            <input
+              type="checkbox"
+              [checked]="hasRoleCanWrite(section, role)"
+              [disabled]="isAdminRole(role)"
+              [class.disabled-checkbox]="isAdminRole(role)"
+              (change)="onToggleCanWrite(section, role, $any($event.target).checked)"
+            />
+          </td>
+          <td>
+            <button
+              (click)="save(section)"
+              [disabled]="savingIds.has(section.idSection)"
+            >
+              {{ savingIds.has(section.idSection) ? 'Saving...' : 'Save' }}
+            </button>
+          </td>
+        </tr>
+      </ng-container>
+
+      <!-- RANGÉES pour créer une nouvelle section -->
+      <!-- Lecture -->
       <tr style="background-color: #f9fafb;">
-        <td>-</td>
         <td>
           <input
             type="text"
@@ -100,22 +122,37 @@
             </option>
           </select>
         </td>
+        <td>Lecture</td>
         <td *ngFor="let role of roleKeys" class="center">
           <input
             type="checkbox"
-            [checked]="hasNewRole(role)"
-            [disabled]="isAdminRole(role)"
-            [class.disabled-checkbox]="isAdminRole(role)"
-            (change)="toggleNewRole(role, $any($event.target).checked)"
+            [checked]="hasNewRoleCanRead(role)"
+            (change)="toggleNewRoleCanRead(role, $any($event.target).checked)"
           />
         </td>
-        <td>
+        <td rowspan="2" style="vertical-align: middle; text-align: center;">
           <button
             (click)="createSection()"
             [disabled]="creating || !newSectionNom.trim() || !newSectionPath.trim()"
           >
             {{ creating ? 'Création...' : 'Créer' }}
           </button>
+        </td>
+      </tr>
+      <!-- Écriture -->
+      <tr style="background-color: #f9fafb;">
+        <td></td>
+        <td></td>
+        <td></td>
+        <td>Écriture</td>
+        <td *ngFor="let role of roleKeys" class="center">
+          <input
+            type="checkbox"
+            [checked]="hasNewRoleCanWrite(role)"
+            [disabled]="isAdminRole(role)"
+            [class.disabled-checkbox]="isAdminRole(role)"
+            (change)="toggleNewRoleCanWrite(role, $any($event.target).checked)"
+          />
         </td>
       </tr>
     </tbody>

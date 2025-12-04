@@ -23,7 +23,8 @@ public abstract class SectionMapper {
     @Mapping(source = "nom", target = "nom")
     @Mapping(source = "path", target = "path")
     @Mapping(source = "supprimed", target = "supprimed")
-    @Mapping(ignore = true, target = "roles")
+    @Mapping(ignore = true, target = "rolesCanRead")
+    @Mapping(ignore = true, target = "rolesCanWrite")
     public abstract SectionDAO toDAO(SectionSiteEntity entity);
 
     @AfterMapping
@@ -31,9 +32,16 @@ public abstract class SectionMapper {
         if (entity.getParent() != null) {
             dao.setIdParent(entity.getParent().getIdSection());
         }
-        dao.setRoles(new ArrayList<>());
-        if (entity.getRoles() != null) {
-            dao.setRoles(entity.getRoles().stream()
+        dao.setRolesCanRead(new ArrayList<>());
+        if (entity.getRolesCanRead() != null) {
+            dao.setRolesCanRead(entity.getRolesCanRead().stream()
+                    .map(RoleEntity::getNomRole)
+                    .toList());
+        }
+
+        dao.setRolesCanWrite(new ArrayList<>());
+        if (entity.getRolesCanWrite() != null) {
+            dao.setRolesCanWrite(entity.getRolesCanWrite().stream()
                     .map(RoleEntity::getNomRole)
                     .toList());
         }
@@ -43,7 +51,9 @@ public abstract class SectionMapper {
     @Mapping(source = "nom", target = "nom")
     @Mapping(source = "path", target = "path")
     @Mapping(source = "supprimed", target = "supprimed")
-    @Mapping(ignore = true, target = "roles")
+    @Mapping(ignore = true, target = "parent")
+    @Mapping(ignore = true, target = "rolesCanRead")
+    @Mapping(ignore = true, target = "rolesCanWrite")
     public abstract SectionSiteEntity toEntity(SectionDAO dao);
 
     @AfterMapping
@@ -53,17 +63,30 @@ public abstract class SectionMapper {
             parentEntity.setIdSection(dao.getIdParent());
             entity.setParent(parentEntity);
         }
-        entity.setRoles(new HashSet<>());
-        if (dao.getRoles() != null) {
-            for (String roleName : dao.getRoles()) {
+        entity.setRolesCanWrite(new HashSet<>());
+        if (dao.getRolesCanWrite() != null) {
+            for (String roleName : dao.getRolesCanWrite()) {
                 RoleEntity roleEntity = roleRepository.findByNomRole(roleName)
                         .orElseGet(() -> {
                             RoleEntity r = new RoleEntity();
                             r.setNomRole(roleName);
                             return roleRepository.save(r);
                         });
-                entity.getRoles().add(roleEntity);
+                entity.getRolesCanWrite().add(roleEntity);
             }
+        }
+        entity.setRolesCanRead(new HashSet<>());
+        if (dao.getRolesCanRead() != null) {
+            for (String roleName : dao.getRolesCanRead()) {
+                RoleEntity roleEntity = roleRepository.findByNomRole(roleName)
+                        .orElseGet(() -> {
+                            RoleEntity r = new RoleEntity();
+                            r.setNomRole(roleName);
+                            return roleRepository.save(r);
+                        });
+                entity.getRolesCanRead().add(roleEntity);
+            }
+
         }
     }
 

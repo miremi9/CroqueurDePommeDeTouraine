@@ -1,6 +1,6 @@
 import { Component, Input, inject, EventEmitter, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ArticleResponse as ArticleModel } from '../../model/article-response.model';
+import { ArticleResponse as ArticleModel, SectionResponse } from '../../model/article-response.model';
 import { Article as ArticleComponent } from '../article/article';
 import { AuthService } from '../../services/auth.service';
 import { map } from 'rxjs';
@@ -26,12 +26,27 @@ export class FileArticle {
   }
 
   @Input() idSection: number | null = null;
+  @Input() section: SectionResponse | null = null;
   @Output() articleSaved = new EventEmitter<ArticleModel>();
   @Output() articleDeleted = new EventEmitter<string>();
 
   roles$ = this.auth.roles$;
   canWrite$ = this.roles$.pipe(
-    map(roles => (roles.includes('ADMIN') || roles.includes('EDITEUR')) && (this.idSection !== null && this.idSection !== -1))
+    map(userRoles => {
+      const sectionRoles = this.section?.rolesCanWrite ?? [];
+
+      // Si on a une section et des rôles d'écriture définis, on vérifie l'intersection
+      if (this.section && sectionRoles.length > 0) {
+        return sectionRoles.some(role => userRoles.includes(role));
+      }
+
+      // Fallback : ancien comportement (ADMIN ou EDITEUR) + idSection valide
+      return (
+        (userRoles.includes('ADMIN') || userRoles.includes('EDITEUR')) &&
+        this.idSection !== null &&
+        this.idSection !== -1
+      );
+    })
   );
 
   showCompose = false;

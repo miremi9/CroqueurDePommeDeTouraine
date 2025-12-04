@@ -1,12 +1,13 @@
 import { AsyncPipe, NgIf } from '@angular/common';
 import { Component, inject } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { map } from 'rxjs';
 import { MenuComponent } from '../menu/menu';
 import { SiteBodyService } from '../../services/site-body.service';
 
 @Component({
   selector: 'app-header-componant',
-  imports: [MenuComponent, AsyncPipe, NgIf],
+  imports: [MenuComponent, AsyncPipe, NgIf, RouterLink],
   templateUrl: './header-componant.html',
   styleUrl: './header-componant.css',
 })

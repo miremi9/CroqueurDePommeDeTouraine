@@ -4,6 +4,7 @@ import { SectionResponse } from './model/article-response.model';
 import { DynamicPage } from './pages/dynamic-page/dynamic-page';
 import { AdminEditSectionComponent } from './pages/admin-edit-section/admin-edit-section.component';
 import { AdminEditRoleComponent } from './pages/admin-edit-users/admin-edit-users.component';
+import { AdminEditRolePageComponent } from './pages/admin-edit-role/admin-edit-role.component';
 import { AdminEditSiteComponent } from './pages/admin-edit-site/admin-edit-site.component';
 import { adminGuard } from './guards/admin.guard';
 
@@ -35,6 +36,12 @@ export const baseRoutes: Routes = [
     component: AdminEditRoleComponent,
     canActivate: [adminGuard],
     data: { title: 'Edit Users' }
+  },
+  {
+    path: 'admin/edit-role',
+    component: AdminEditRolePageComponent,
+    canActivate: [adminGuard],
+    data: { title: 'Edit Role' }
   },
   {
     path: 'admin/edit-site',

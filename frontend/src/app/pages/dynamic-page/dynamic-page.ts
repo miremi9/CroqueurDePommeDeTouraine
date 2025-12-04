@@ -1,7 +1,7 @@
 import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ArticleService } from '../../services/article.service';
-import { ArticleResponse } from '../../model/article-response.model';
+import { ArticleResponse, SectionResponse } from '../../model/article-response.model';
 import { FileArticle } from '../../componant/file-article/file-article';
 
 @Component({
@@ -11,10 +11,10 @@ import { FileArticle } from '../../componant/file-article/file-article';
   styleUrl: './dynamic-page.css',
 })
 export class DynamicPage implements OnInit {
-  routeData: any;
+  routeData: SectionResponse | null = null;
   articleService = inject(ArticleService);
   articles: ArticleResponse[] = [];
-  section: number = -1;
+  section: SectionResponse | null = null;
   error: string | null = null;
   loading: boolean = true;
   
@@ -24,21 +24,22 @@ export class DynamicPage implements OnInit {
   ) {}
 
   ngOnInit() {
-    this.routeData = this.route.snapshot.data['routeData'];
-    this.section = this.routeData?.['idSection'] ?? -1;
+    this.routeData = this.route.snapshot.data['routeData'] as SectionResponse | null;
+    this.section = this.routeData ?? null;
+    const idSection = this.section?.idSection ?? -1;
     
-    if (this.section !== -1) {
-      this.loadArticles();
+    if (idSection !== -1) {
+      this.loadArticles(idSection);
     } else {
       console.warn('Section non définie');
       this.loading = false;
     }
   }
 
-  loadArticles() {
+  loadArticles(idSection: number) {
     this.error = null;
     this.loading = true;
-    this.articleService.getArticlesBySection(this.section).subscribe({
+    this.articleService.getArticlesBySection(idSection).subscribe({
       next: (articles: any) => {
         console.log('Articles reçus:', articles);
         // Créer une nouvelle référence d'array pour déclencher la détection de changement

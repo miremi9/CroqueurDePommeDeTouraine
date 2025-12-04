@@ -25,6 +25,7 @@
 
 .menu__item--has-dropdown {
   position: relative;
+  padding-bottom: 8px; /* agrandit la zone de survol pour le dropdown */
 }
 
 .menu__link {
@@ -45,7 +46,7 @@
 
 .menu__dropdown {
   position: absolute;
-  top: 100%;
+  top: calc(100% - 8px); /* remonte légèrement le dropdown pour éviter un \"trou\" de survol */
   left: 0;
   margin-top: 4px;
   padding: 0;

@@ -4,13 +4,14 @@
   </div>
 }
 
-@if (section !== -1 && !loading) {
+@if (section && !loading) {
   <app-file-article
     [articles]="articles"
-    [idSection]="section"
+    [idSection]="section.idSection"
+    [section]="section"
     (articleSaved)="onArticleSaved($event)"
     (articleDeleted)="onArticleDeleted($event)"
   />
-} @else if (section === -1) {
+} @else if (!section) {
   <p>Aucune section sélectionnée</p>
 }

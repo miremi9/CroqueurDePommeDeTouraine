@@ -43,4 +43,12 @@ export class RoleService {
   updateRole(role: RoleDAO): Observable<RoleDAO> {
     return this.http.put<RoleDAO>(`${this.apiUrl}/roles`, role);
   }
+
+  /**
+   * Supprime un rôle
+   * DELETE /roles/{id}
+   */
+  deleteRole(idRole: string | number): Observable<void> {
+    return this.http.delete<void>(`${this.apiUrl}/roles/${idRole}`);
+  }
 }

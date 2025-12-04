@@ -56,4 +56,14 @@ public class RoleBusiness {
         return roleMapper.toDAO(roleRepository.save(roleMapper.toEntity(roleDAO)));
     }
 
+    public void deleteRole(Long roleId) {
+        RoleDAO roleDAO = roleMapper.toDAO(roleRepository.findById(roleId)
+                .orElseThrow(() -> new IllegalArgumentException("Role with ID " + roleId + " does not exist.")));
+
+        if (ROLES.ALL_ROLES.contains(roleDAO.getNomRole())) {
+            throw new IllegalArgumentException("Cannot delete reserved role: " + roleDAO.getNomRole());
+        }
+
+        roleRepository.deleteById(roleId);
+    }
 }

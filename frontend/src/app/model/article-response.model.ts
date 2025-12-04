@@ -23,12 +23,13 @@ export interface UserResponse {
 }
 
 export interface SectionResponse {
-	"idSection": number,
-	"nom": string,
-	"path": string,
-	"idParent": number | null,
-	"supprimed": boolean | null,
-	"roles": string[]
+  idSection: number;
+  nom: string;
+  path: string;
+  idParent: number | null;
+  supprimed: boolean | null;
+  rolesCanRead: string[];
+  rolesCanWrite: string[];
 }
 
 export interface SiteBodyResponse {

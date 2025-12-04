@@ -1,0 +1,61 @@
+<div class="admin-page">
+  <h1>Gestion des rôles</h1>
+
+  <div *ngIf="loading">Chargement...</div>
+  <div *ngIf="error" class="error">{{ error }}</div>
+
+  <table class="roles-table" *ngIf="!loading">
+    <thead>
+      <tr>
+        <th>Nom du rôle</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let role of roles">
+        <td>
+          <input
+            type="text"
+            [(ngModel)]="role.nomRole"
+            style="padding: 0.3rem 0.4rem; width: 100%; box-sizing: border-box;"
+          />
+        </td>
+        <td>
+          <button
+            (click)="save(role)"
+            [disabled]="savingIds.has(role.idRole ?? '')"
+          >
+            {{ savingIds.has(role.idRole ?? '') ? 'Sauvegarde...' : 'Sauvegarder' }}
+          </button>
+          <button
+            class="danger"
+            (click)="delete(role)"
+            [disabled]="savingIds.has(role.idRole ?? '')"
+          >
+            Supprimer
+          </button>
+        </td>
+      </tr>
+
+      <!-- Ligne de création -->
+      <tr class="new-role-row">
+        <td>
+          <input
+            type="text"
+            placeholder="Nom du nouveau rôle"
+            [(ngModel)]="newRoleName"
+            style="padding: 0.3rem 0.4rem; width: 100%; box-sizing: border-box;"
+          />
+        </td>
+        <td>
+          <button
+            (click)="create()"
+            [disabled]="creating || !newRoleName.trim()"
+          >
+            {{ creating ? 'Création...' : 'Créer' }}
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

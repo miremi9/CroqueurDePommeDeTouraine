@@ -37,6 +37,7 @@ export class MenuComponent implements OnInit, OnDestroy {
   userRoles$ = this.authService.roles$;
 
   showDropdown: number | null = null;
+  showAdminDropdown = false;
 
   constructor(private router: Router) {}
 
@@ -47,6 +48,14 @@ export class MenuComponent implements OnInit, OnDestroy {
 
   onMouseLeaveParent() {
     this.showDropdown = null;
+  }
+
+  onMouseEnterAdmin() {
+    this.showAdminDropdown = true;
+  }
+
+  onMouseLeaveAdmin() {
+    this.showAdminDropdown = false;
   }
 
   ngOnInit() {
@@ -76,10 +85,11 @@ export class MenuComponent implements OnInit, OnDestroy {
       this.routeService.getDynamicRoutes(),
       this.userRoles$
     ]).subscribe(([sections, userRoles]) => {
-      // Filtrer les sections selon les permissions utilisateur
+      // Filtrer les sections selon les permissions utilisateur (lecture)
       const accessibleSections = sections.filter(section => {
-        if (!section.roles || section.roles.length === 0) return true;
-        return section.roles.some(role => userRoles.includes(role) || role === Roles.ADMIN);
+        const readRoles = Array.isArray(section.rolesCanRead) ? section.rolesCanRead : [];
+        if (readRoles.length === 0) return true;
+        return readRoles.some(role => userRoles.includes(role) || role === Roles.ADMIN);
       });
 
       // Organiser les sections par parent/enfant

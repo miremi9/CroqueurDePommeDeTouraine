@@ -26,16 +26,16 @@ public class ToolsAuthorisationEndPoint {
 
     public boolean CanReadThisSection(String authHeader, Long idSection) {
         List<String> rolesNeeded = getRoleOfSection(idSection);
-        Set<String> rolesUser = getRoles(getUser(getUserNameFromHeader(authHeader)));
+        Set<String> rolesUser = getRolesCanRead(getUser(getUserNameFromHeader(authHeader)));
         return (rolesUser.stream().anyMatch(rolesNeeded::contains));
     }
 
     public boolean CanReadSection(SectionSiteEntity section, UserEntity user) {
         if (user == null) {
-            return section.getRoles().stream().map(s -> s.getNomRole()).toList().contains("USER");
+            return section.getRolesCanRead().stream().map(RoleEntity::getNomRole).toList().contains("USER");
         }
 
-        Set<RoleEntity> rolesNeeded = section.getRoles();
+        Set<RoleEntity> rolesNeeded = section.getRolesCanRead();
         Set<RoleEntity> rolesUser = user.getRoles();
         return (rolesUser.stream().anyMatch(rolesNeeded::contains));
     }
@@ -47,7 +47,7 @@ public class ToolsAuthorisationEndPoint {
 
     private List<String> getRoleOfSection(Long idSection) {
         return sectionRepository.getReferenceById(idSection)
-                .getRoles()
+                .getRolesCanRead()
                 .stream().map(RoleEntity::getNomRole)
                 .toList();
     }
@@ -65,7 +65,7 @@ public class ToolsAuthorisationEndPoint {
         return userRepository.findByNom(userName);
     }
 
-    private Set<String> getRoles(UserEntity userEntity) {
+    private Set<String> getRolesCanRead(UserEntity userEntity) {
         Set<String> roles = new HashSet<>();
         roles.add(ROLES.ROLE_USER);
         if (userEntity != null && userEntity.getRoles() != null) {

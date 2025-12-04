@@ -19,5 +19,7 @@ public class SectionSiteEntity {
     SectionSiteEntity parent;
     Boolean supprimed;
     @ManyToMany(fetch = FetchType.EAGER)
-    Set<RoleEntity> roles;
+    Set<RoleEntity> rolesCanRead;
+    @ManyToMany(fetch = FetchType.EAGER)
+    Set<RoleEntity> rolesCanWrite;
 }

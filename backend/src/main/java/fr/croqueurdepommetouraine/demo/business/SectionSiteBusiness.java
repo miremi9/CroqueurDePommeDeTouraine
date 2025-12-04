@@ -49,13 +49,19 @@ public class SectionSiteBusiness {
     }
 
     private void gestionRole(SectionSiteEntity section) {
-        if (section.getRoles() != null) {
-            section.setRoles(
-                    section.getRoles().stream()
+        if (section.getRolesCanRead() != null) {
+            section.setRolesCanRead(
+                    section.getRolesCanRead().stream()
                             .map(r -> roleMapper.toEntity(roleBusiness.getRoleByName(r.getNomRole())))
                             .collect(Collectors.toSet()));
         }
-        section.getRoles().add(roleMapper.toEntity(roleBusiness.getRoleByName(ROLES.ROLE_ADMIN)));
+        section.getRolesCanRead().add(roleMapper.toEntity(roleBusiness.getRoleByName(ROLES.ROLE_ADMIN)));
+        if (section.getRolesCanWrite() != null) {
+            section.setRolesCanWrite(
+                    section.getRolesCanWrite().stream()
+                            .map(r -> roleMapper.toEntity(roleBusiness.getRoleByName(r.getNomRole())))
+                            .collect(Collectors.toSet()));
+        }
     }
 
     private void gestionParent(SectionSiteEntity section) {

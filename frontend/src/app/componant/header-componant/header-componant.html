@@ -1,24 +1,30 @@
 
 <ng-container *ngIf="siteBody$ | async as siteBody; else fallbackHeader">
   <div id="top-header">
-    <img
-      *ngIf="siteBody.logoSrc"
-      class="logo logo-left"
-      [src]="siteBody.logoSrc"
-      alt="Logo gauche"
-    />
+    <a routerLink="/accueil">
+      <img
+        *ngIf="siteBody.logoSrc"
+        class="logo logo-left"
+        [src]="siteBody.logoSrc"
+        alt="Logo gauche"
+      />
+    </a>
     <p class="site-title">{{ siteBody.titre }}</p>
-    <img
-      *ngIf="siteBody.logoSrc"
-      class="logo logo-right"
-      [src]="siteBody.logoSrc"
-      alt="Logo droite"
-    />
+    <a routerLink="/accueil">
+      <img
+        *ngIf="siteBody.logoSrc"
+        class="logo logo-right"
+        [src]="siteBody.logoSrc"
+        alt="Logo droite"
+      />
+    </a>
   </div>
 </ng-container>
 <ng-template #fallbackHeader>
   <div id="top-header">
-    <p class="site-title">Les Croqueurs de Pommes</p>
+    <a routerLink="/accueil">
+      <p class="site-title">Les Croqueurs de Pommes</p>
+    </a>
   </div>
 </ng-template>
 <app-menu />
