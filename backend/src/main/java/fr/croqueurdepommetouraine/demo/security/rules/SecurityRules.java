@@ -34,6 +34,10 @@ public class SecurityRules {
                 SecurityRule.permitAll(HttpMethod.GET, "/site-body"),
                 SecurityRule.restricted(HttpMethod.PUT, "/site-body", ROLES.ROLE_ADMIN),
 
+                SecurityRule.restricted(HttpMethod.GET, "/roles", ROLES.ROLE_ADMIN),
+                SecurityRule.restricted(HttpMethod.PUT, "/roles", ROLES.ROLE_ADMIN),
+                SecurityRule.restricted(HttpMethod.POST, "/roles", ROLES.ROLE_ADMIN),
+
                 // Par défaut, tout le reste est authentifié
                 SecurityRule.restricted(null, "/**") // null = toutes méthodes
         );

@@ -8,6 +8,7 @@ import fr.croqueurdepommetouraine.demo.repository.SectionRepository;
 import fr.croqueurdepommetouraine.demo.repository.UserRepository;
 import fr.croqueurdepommetouraine.demo.security.ROLES;
 import fr.croqueurdepommetouraine.demo.tools.ToolsAuthorisationEndPoint;
+import fr.croqueurdepommetouraine.demo.transformer.RoleMapper;
 import fr.croqueurdepommetouraine.demo.transformer.SectionMapper;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
@@ -25,6 +26,7 @@ import java.util.stream.Collectors;
 public class SectionSiteBusiness {
 
     private final SectionMapper sectionMapper;
+    private final RoleMapper roleMapper;
     private final SectionRepository SectionRepository;
     private final UserRepository userRepository;
     private final RoleBusiness roleBusiness;
@@ -50,10 +52,10 @@ public class SectionSiteBusiness {
         if (section.getRoles() != null) {
             section.setRoles(
                     section.getRoles().stream()
-                            .map(r -> roleBusiness.getRoleByName(r.getNomRole()))
+                            .map(r -> roleMapper.toEntity(roleBusiness.getRoleByName(r.getNomRole())))
                             .collect(Collectors.toSet()));
         }
-        section.getRoles().add(roleBusiness.getRoleByName(ROLES.ROLE_ADMIN));
+        section.getRoles().add(roleMapper.toEntity(roleBusiness.getRoleByName(ROLES.ROLE_ADMIN)));
     }
 
     private void gestionParent(SectionSiteEntity section) {

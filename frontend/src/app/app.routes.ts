@@ -3,7 +3,7 @@ import { AccueilPageComponent } from './pages/accueil/accueil-page.component';
 import { SectionResponse } from './model/article-response.model';
 import { DynamicPage } from './pages/dynamic-page/dynamic-page';
 import { AdminEditSectionComponent } from './pages/admin-edit-section/admin-edit-section.component';
-import { AdminEditRoleComponent } from './pages/admin-edit-role/admin-edit-role.component';
+import { AdminEditRoleComponent } from './pages/admin-edit-users/admin-edit-users.component';
 import { AdminEditSiteComponent } from './pages/admin-edit-site/admin-edit-site.component';
 import { adminGuard } from './guards/admin.guard';
 
@@ -31,10 +31,10 @@ export const baseRoutes: Routes = [
     data: { title: 'Edit Section' }
   },
   {
-    path: 'admin/edit-role',
+    path: 'admin/edit-users',
     component: AdminEditRoleComponent,
     canActivate: [adminGuard],
-    data: { title: 'Edit Role' }
+    data: { title: 'Edit Users' }
   },
   {
     path: 'admin/edit-site',

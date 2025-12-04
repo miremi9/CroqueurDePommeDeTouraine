@@ -4,21 +4,22 @@ import { UserService } from '../../services/user.service';
 import { UserResponse } from '../../model/article-response.model';
 import { Roles } from '../../model/roles';
 import { AuthService } from '../../services/auth.service';
+import { RoleService, RoleDAO } from '../../services/role.service';
 
 
 @Component({
-  selector: 'app-admin-edit-role',
+  selector: 'app-admin-edit-users',
   standalone: true,
   imports: [CommonModule],
-  templateUrl: './admin-edit-role.component.html',
-  styleUrl: './admin-edit-role.component.css'
+  templateUrl: './admin-edit-users.component.html',
+  styleUrl: './admin-edit-users.component.css'
 })
 export class AdminEditRoleComponent {
   users: UserResponse[] = [];
   displayedUsers: UserResponse[] = [];
   loading = false;
   error: string | null = null;
-  roleKeys: string[] = Object.values(Roles);
+  roleKeys: string[] = [];
   savingIds = new Set<UserResponse['idUser']>();
   cdr: ChangeDetectorRef;
   filterText: string = '';
@@ -27,10 +28,12 @@ export class AdminEditRoleComponent {
 
   constructor(
     private userService: UserService,
-    private authService: AuthService
+    private authService: AuthService,
+    private roleService: RoleService
   ) {
     this.cdr = inject(ChangeDetectorRef);
     this.loadUsers();
+    this.loadRoles();
   }
 
   private loadUsers(): void {
@@ -48,6 +51,22 @@ export class AdminEditRoleComponent {
         this.loading = false;
         this.error = 'Impossible de charger les utilisateurs.';
         console.error(err);
+      }
+    });
+  }
+
+  private loadRoles(): void {
+    this.roleService.getAllRoles().subscribe({
+      next: (roles: RoleDAO[]) => {
+        const keys = (roles || []).map(r => r.nomRole).filter(Boolean);
+        this.roleKeys = Array.from(new Set(keys)).sort();
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Erreur lors du chargement des rôles :', err);
+        if (!this.error) {
+          this.error = 'Impossible de charger les rôles.';
+        }
       }
     });
   }
