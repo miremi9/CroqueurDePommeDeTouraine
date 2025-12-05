@@ -1,6 +1,7 @@
 package fr.croqueurdepommetouraine.demo.business;
 
 import fr.croqueurdepommetouraine.demo.DAO.RoleDAO;
+import fr.croqueurdepommetouraine.demo.Entity.RoleEntity;
 import fr.croqueurdepommetouraine.demo.repository.RoleRepository;
 import fr.croqueurdepommetouraine.demo.security.ROLES;
 import fr.croqueurdepommetouraine.demo.transformer.RoleMapper;
@@ -25,7 +26,9 @@ public class RoleBusiness {
 
     public Set<RoleDAO> getAllRoles() {
         return roleRepository.findAll().stream()
+                .filter(roleEntity -> roleEntity.getDeleted() != Boolean.TRUE)
                 .map(roleMapper::toDAO)
+
                 .collect(Collectors.toSet());
     }
 
@@ -57,13 +60,16 @@ public class RoleBusiness {
     }
 
     public void deleteRole(Long roleId) {
+        RoleEntity existingRole = roleRepository.findById(roleId)
+                .orElseThrow(() -> new IllegalArgumentException("Role with ID " + roleId + " does not exist."));
+
         RoleDAO roleDAO = roleMapper.toDAO(roleRepository.findById(roleId)
                 .orElseThrow(() -> new IllegalArgumentException("Role with ID " + roleId + " does not exist.")));
 
         if (ROLES.ALL_ROLES.contains(roleDAO.getNomRole())) {
             throw new IllegalArgumentException("Cannot delete reserved role: " + roleDAO.getNomRole());
         }
-
-        roleRepository.deleteById(roleId);
+        existingRole.setDeleted(Boolean.TRUE);
+        roleRepository.save(existingRole);
     }
 }

@@ -15,5 +15,6 @@ public class RoleEntity {
 
     @Column(name = "nom_role", nullable = false, unique = true)
     String nomRole;
-    
+    Boolean deleted = false;
+
 }

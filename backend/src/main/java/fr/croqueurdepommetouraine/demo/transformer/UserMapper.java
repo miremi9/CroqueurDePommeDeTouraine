@@ -4,7 +4,6 @@ import fr.croqueurdepommetouraine.demo.DAO.UserDAO;
 import fr.croqueurdepommetouraine.demo.Entity.RoleEntity;
 import fr.croqueurdepommetouraine.demo.Entity.UserEntity;
 import fr.croqueurdepommetouraine.demo.repository.RoleRepository;
-import fr.croqueurdepommetouraine.demo.security.ROLES;
 import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -43,17 +42,14 @@ public abstract class UserMapper {
         if (userDAO.getRoles() != null) {
             userEntity.setRoles(new HashSet<>());
             for (String roleName : userDAO.getRoles()) {
-                if (ROLES.ALL_ROLES.contains(roleName)) {
-                    RoleEntity roleEntity = roleRepository.findByNomRole(roleName)
-                            .orElseGet(() -> {
-                                RoleEntity r = new RoleEntity();
-                                r.setNomRole(roleName);
-                                return roleRepository.save(r);
-                            });
-                    userEntity.getRoles().add(roleEntity);
-                } else {
-                    throw new IllegalArgumentException("Invalid role name: " + roleName);
-                }
+                RoleEntity roleEntity = roleRepository.findByNomRole(roleName)
+                        .orElseGet(() -> {
+                            RoleEntity r = new RoleEntity();
+                            r.setNomRole(roleName);
+                            return roleRepository.save(r);
+                        });
+                userEntity.getRoles().add(roleEntity);
+
             }
 
         }

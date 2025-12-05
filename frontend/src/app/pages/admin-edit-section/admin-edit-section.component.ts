@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { RouteService } from '../../services/route.service';
 import { SectionResponse } from '../../model/article-response.model';
 import { Roles } from '../../model/roles';
+import { RoleService, RoleDAO } from '../../services/role.service';
 
 
 @Component({
@@ -18,7 +19,7 @@ export class AdminEditSectionComponent {
   displayedSections: SectionResponse[] = [];
   loading = false;
   error: string | null = null;
-  roleKeys: string[] = Object.values(Roles);
+  roleKeys: string[] = [];
   savingIds = new Set<SectionResponse['idSection']>();
   cdr: ChangeDetectorRef;
   filterText: string = '';
@@ -29,9 +30,29 @@ export class AdminEditSectionComponent {
   newSectionRolesCanWrite = new Set<string>([Roles.ADMIN]); // ADMIN peut toujours écrire
   creating = false;
 
-  constructor(private routeService: RouteService) {
+  constructor(
+    private routeService: RouteService,
+    private roleService: RoleService
+  ) {
     this.cdr = inject(ChangeDetectorRef);
+    this.loadRoles();
     this.loadSections();
+  }
+
+  private loadRoles(): void {
+    this.roleService.getAllRoles().subscribe({
+      next: (roles: RoleDAO[]) => {
+        const keys = (roles || []).map(r => r.nomRole).filter(Boolean);
+        this.roleKeys = Array.from(new Set(keys)).sort();
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        console.error('Erreur lors du chargement des rôles :', err);
+        if (!this.error) {
+          this.error = 'Impossible de charger les rôles.';
+        }
+      }
+    });
   }
 
   private loadSections(): void {
