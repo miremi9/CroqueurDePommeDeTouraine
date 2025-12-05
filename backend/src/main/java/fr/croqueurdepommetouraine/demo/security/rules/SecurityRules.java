@@ -16,13 +16,10 @@ public class SecurityRules {
 
                 SecurityRule.permitAll(HttpMethod.GET, "/articles"),
                 SecurityRule.permitAll(HttpMethod.GET, "/articles/**"),
-                SecurityRule.restricted(HttpMethod.PUT, "/articles", ROLES.ROLE_ADMIN, ROLES.ROLE_EDITOR),
-                SecurityRule.restricted(HttpMethod.POST, "/articles", ROLES.ROLE_ADMIN, ROLES.ROLE_MODERATOR, ROLES.ROLE_EDITOR),
-                SecurityRule.restricted(HttpMethod.DELETE, "/articles*", ROLES.ROLE_ADMIN, ROLES.ROLE_MODERATOR, ROLES.ROLE_EDITOR),
 
                 SecurityRule.permitAll(HttpMethod.GET, "/illustrations"),
                 SecurityRule.permitAll(HttpMethod.GET, "/illustrations/**"),
-                SecurityRule.restricted(HttpMethod.POST, "/illustrations", ROLES.ROLE_ADMIN, ROLES.ROLE_MODERATOR, ROLES.ROLE_EDITOR),
+                SecurityRule.restricted(HttpMethod.POST, "/illustrations", ROLES.ROLE_ADMIN, ROLES.ROLE_MODERATOR, ROLES.ROLE_USER),
 
                 SecurityRule.restricted(HttpMethod.GET, "/users", ROLES.ROLE_ADMIN),
                 SecurityRule.restricted(HttpMethod.PUT, "/users/**", ROLES.ROLE_ADMIN),

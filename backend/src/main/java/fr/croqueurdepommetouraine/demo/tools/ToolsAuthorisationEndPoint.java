@@ -40,6 +40,16 @@ public class ToolsAuthorisationEndPoint {
         return (rolesUser.stream().anyMatch(rolesNeeded::contains));
     }
 
+    public boolean CanWriteSection(SectionSiteEntity section, UserEntity user) {
+        if (user == null) {
+            return false;
+        }
+
+        Set<RoleEntity> rolesNeeded = section.getRolesCanWrite();
+        Set<RoleEntity> rolesUser = user.getRoles();
+        return (rolesUser.stream().anyMatch(rolesNeeded::contains));
+    }
+
     public UserEntity getUserFromHeader(String header) {
         return getUser(getUserNameFromHeader(header));
     }

@@ -64,13 +64,21 @@ public class ArticleBusiness {
 
     public ArticleDAO createArticle(ArticleDAO article, String username) {
 
+
         ArticleEntity articleEntity = articleMapper.toEntity(article);
         checkArticleValide(articleEntity);
         loadIllustration(articleEntity);
         loadSection(articleEntity);
 
+
         articleEntity.setDateCreation(new Date());
         articleEntity.setAuthor(userBusiness.getUserByNom(username));
+
+
+        if (!toolsAuthorisationEndPoint.CanWriteSection(articleEntity.getSection(), articleEntity.getAuthor())) {
+            throw new IllegalArgumentException("Pas les droits pour écrire dans cette section");
+        }
+
         ArticleEntity savedArticle = articleRepository.save(articleEntity);
         return articleMapper.toDAO(savedArticle);
     }
