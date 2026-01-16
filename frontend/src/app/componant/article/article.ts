@@ -6,6 +6,7 @@ import { IllustrationService } from '../../services/illustration.service';
 import { map, combineLatest, catchError, of, tap } from 'rxjs';
 import { ArticleResponse } from '../../model/article-response.model';
 import { ArticleService } from '../../services/article.service';
+import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-article',
@@ -19,6 +20,7 @@ export class Article implements OnChanges, OnDestroy {
   illustrationService = inject(IllustrationService);
   private articleService = inject(ArticleService);
   private cdr = inject(ChangeDetectorRef);
+  private sanitizer = inject(DomSanitizer);
   
   private imageUrls: Map<string, string> = new Map();
   private illustrationMetadata: Map<string, { fileName: string; isImage: boolean; mimeType?: string }> = new Map();
@@ -183,6 +185,16 @@ export class Article implements OnChanges, OnDestroy {
     return this.index % 2 === 0;
   }
 
+  getRenderedContent(): SafeHtml {
+    if (!this.article?.content) {
+      return this.sanitizer.bypassSecurityTrustHtml('');
+    }
+    
+    // Sanitiser le HTML pour éviter les XSS tout en permettant les balises <a>
+    const sanitized = this.sanitizer.sanitize(1, this.article.content) || '';
+    return this.sanitizer.bypassSecurityTrustHtml(sanitized);
+  }
+
   removeIllustration(id: string): void {
     // Supprime immédiatement côté serveur puis met à jour l'article
     this.illustrationService.deleteIllustration(id).subscribe({
@@ -209,9 +221,5 @@ export class Article implements OnChanges, OnDestroy {
       }
     });
   }
-}
-
-function subscribe(arg0: { next: () => void; error: (e: any) => void; }) {
-  throw new Error('Function not implemented.');
 }
 

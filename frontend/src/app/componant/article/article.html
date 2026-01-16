@@ -18,7 +18,7 @@
         <div class="article-texte">
             <h1>{{ article.title }}</h1>
             <div class="article-content-wrapper">
-                <p class="article-content-text">{{ article.content }}</p>
+                <div class="article-content-text" [innerHTML]="getRenderedContent()"></div>
                 <p class="article-author">Par {{ article.authorName }}</p>
             </div>
         </div>

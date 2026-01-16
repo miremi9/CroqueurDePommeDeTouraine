@@ -159,6 +159,42 @@
     text-align: justify;
     flex: 1;
     white-space: pre-line; /* Préserve les retours à la ligne */
+    line-height: 1.6;
+}
+
+/* Styles pour les liens dans le contenu */
+.article-content-text a {
+    color: color-mix(in srgb, var(--text-on-secondary, #ffffff) 80%, #4a9eff);
+    text-decoration: underline;
+    transition: color 0.2s;
+}
+
+.article-content-text a:hover {
+    color: color-mix(in srgb, var(--text-on-secondary, #ffffff) 60%, #4a9eff);
+}
+
+/* Styles pour les tableaux dans le contenu */
+.article-content-text table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+    background: #ffffff;
+    border: 1px solid #000000;
+}
+
+.article-content-text th,
+.article-content-text td {
+    padding: 8px 12px;
+    border: 1px solid #000000;
+    text-align: left;
+    background: #ffffff;
+    color: #000000;
+}
+
+.article-content-text th {
+    background: #ffffff;
+    font-weight: bold;
+    color: #000000;
 }
 
 .article-author {

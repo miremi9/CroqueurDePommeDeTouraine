@@ -8,7 +8,22 @@
     </label>
     <label class="modal__label">
       <span>Contenu</span>
-      <textarea class="modal__textarea" [(ngModel)]="content" name="content" rows="8" required></textarea>
+      <div class="content-toolbar">
+        <button type="button" class="toolbar-btn" (click)="openLinkModal()" title="Insérer un lien hypertexte">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+            <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+          </svg>
+          Lien
+        </button>
+        <button type="button" class="toolbar-btn" (click)="openTableModal()" title="Insérer un tableau">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2V9M9 21H5a2 2 0 0 1-2-2V9m0 0h18"></path>
+          </svg>
+          Tableau
+        </button>
+      </div>
+      <textarea #contentTextarea class="modal__textarea" [(ngModel)]="content" name="content" rows="8" required></textarea>
     </label>
     <div class="upload">
       <input id="compose-file-input" class="upload__input" type="file" multiple (change)="onFileSelect($event)" />
@@ -60,5 +75,89 @@
     </div>
   </form>
 </div>
+
+<!-- Modal pour insérer un lien -->
+@if (showLinkModal) {
+  <div class="modal__backdrop link-modal-backdrop" (click)="closeLinkModal()"></div>
+  <div class="modal__window link-modal" (click)="$event.stopPropagation()">
+    <h3 class="modal__title">Insérer un lien hypertexte</h3>
+    <form (ngSubmit)="insertLink()" class="modal__form">
+      <label class="modal__label">
+        <span>Texte du lien</span>
+        <input class="modal__input" type="text" [(ngModel)]="linkText" name="linkText" placeholder="Texte à afficher" />
+      </label>
+      <label class="modal__label">
+        <span>URL</span>
+        <input class="modal__input" type="url" [(ngModel)]="linkUrl" name="linkUrl" placeholder="https://exemple.com" required />
+      </label>
+      <div class="modal__actions">
+        <button type="button" class="modal__btn" (click)="closeLinkModal()">Annuler</button>
+        <button type="submit" class="modal__btn modal__btn--primary">Insérer</button>
+      </div>
+    </form>
+  </div>
+}
+
+<!-- Modal pour insérer un tableau -->
+@if (showTableModal) {
+  <div class="modal__backdrop link-modal-backdrop" (click)="closeTableModal()"></div>
+  <div class="modal__window link-modal table-modal" (click)="$event.stopPropagation()">
+    <h3 class="modal__title">Insérer un tableau</h3>
+    <form (ngSubmit)="insertTable()" class="modal__form">
+      <div class="table-size-controls">
+        <label class="modal__label">
+          <span>Nombre de lignes</span>
+          <input class="modal__input" type="number" [(ngModel)]="tableRows" name="tableRows" min="1" max="20" (ngModelChange)="onTableSizeChange()" required />
+        </label>
+        <label class="modal__label">
+          <span>Nombre de colonnes</span>
+          <input class="modal__input" type="number" [(ngModel)]="tableCols" name="tableCols" min="1" max="20" (ngModelChange)="onTableSizeChange()" required />
+        </label>
+      </div>
+      
+      <div class="table-editor">
+        <h4 class="table-editor__title">Contenu du tableau</h4>
+        <div class="table-editor__grid" [style.--cols]="tableCols">
+          <!-- En-tête (première ligne) -->
+          <div class="table-editor__row">
+            @for (colIndex of getTableColsArray(); track colIndex) {
+              <div class="table-editor__cell table-editor__cell--header">
+                <label class="table-editor__cell-label">En-tête {{ colIndex + 1 }}</label>
+                <input 
+                  class="table-editor__cell-input" 
+                  type="text" 
+                  [(ngModel)]="tableCells[0][colIndex]" 
+                  [name]="getCellId(0, colIndex)"
+                  placeholder="En-tête {{ colIndex + 1 }}" />
+              </div>
+            }
+          </div>
+          
+          <!-- Lignes de données -->
+          @for (rowIndex of getTableRowsArray(); track rowIndex) {
+            <div class="table-editor__row">
+              @for (colIndex of getTableColsArray(); track colIndex) {
+                <div class="table-editor__cell">
+                  <label class="table-editor__cell-label">Ligne {{ rowIndex + 1 }}, Colonne {{ colIndex + 1 }}</label>
+                  <input 
+                    class="table-editor__cell-input" 
+                    type="text" 
+                    [(ngModel)]="tableCells[rowIndex][colIndex]" 
+                    [name]="getCellId(rowIndex, colIndex)"
+                    placeholder="Cellule {{ rowIndex + 1 }}-{{ colIndex + 1 }}" />
+                </div>
+              }
+            </div>
+          }
+        </div>
+      </div>
+      
+      <div class="modal__actions">
+        <button type="button" class="modal__btn" (click)="closeTableModal()">Annuler</button>
+        <button type="submit" class="modal__btn modal__btn--primary">Insérer</button>
+      </div>
+    </form>
+  </div>
+}
 
 
