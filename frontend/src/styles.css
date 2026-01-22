@@ -1,8 +1,8 @@
 :root {
   --primary-color: #094609;
   --secondary-color: #0c6a3a;
-  --text-on-primary: #ffffff;
-  --text-on-secondary: #ffffff;
+  --text-on-primary: #f1f1f1;
+  --text-on-secondary: #f1f1f1;
   --background-color: #f8faf8;
   --text-color: #1a1a1a;
 }
@@ -16,9 +16,10 @@ body {
   margin: 0;
   padding: 0;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-  background-color: var(--background-color);
-  color: var(--text-color);
+  background-color: var(--primary-color, #094609);
+  color: var(--text-on-primary, #f1f1f1);
   min-height: 100vh;
+  font-weight: normal;
 }
 
 html {

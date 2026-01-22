@@ -1,91 +1,129 @@
-/* Conteneur du flux d'articles */
-:host {
-    display: block;
-}
-
-/* Les articles sont empilés verticalement comme un fil d'actualité */
-:host app-article {
-    display: block;
-}
-
-/* espacement entre les cartes d'article */
-:host app-article + app-article {
-    margin-top: 32px;
-}
-
-/* alterner la position de l'image: pair -> image à gauche, impair -> image à droite (par défaut) */
-:host app-article:nth-child(even) .article {
-    flex-direction: row-reverse;
-}
-
-/* mobile: on repasse en colonne pour une meilleure lisibilité */
-@media (max-width: 768px) {
-    :host app-article .article {
-        flex-direction: column;
-        gap: 16px;
-        width: 100%;
-    }
-
-    :host app-article .article-content,
-    :host app-article .illustration,
-    :host app-article .article.no-image .article-content {
-        flex: 0 0 auto;
-        max-width: 100%;
-    }
-}
-
+/* Conteneur principal */
 .background-article {
-    margin: 0 auto;
-    flex-direction: column;
-    gap: 32px;
-    max-width: 80%;
-    flex: 0 0 100%;
-    background-color: color-mix(in srgb, var(--secondary-color, #08bd53) 90%, #fff);
-    padding: 32px;
-    border-radius: 16px;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+  background-color: var(--primary-color, #094609);
+  color: var(--text-on-primary, #f1f1f1);
+  min-height: 100vh;
+  font-weight: normal;
 }
 
-.articles {
-    margin: 0 auto;
-    display: flex;
-    flex-direction: column;
-    gap: 32px;
-    max-width: 80%;
-}
-
+/* Zone d'actions (bouton de rédaction) */
 .file-actions {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 24px;
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 2.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.2);
 }
 
 .file-actions__btn {
-    padding: 0.75rem 1.5rem;
-    background-color: var(--secondary-color, #0c6a3a);
-    color: var(--text-on-secondary, #ffffff);
-    border: none;
-    border-radius: 8px;
-    font-size: 1rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(135deg, var(--primary-color, #094609) 0%, var(--secondary-color, #0c6a3a) 100%);
+  color: var(--text-on-primary, #ffffff);
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(9, 70, 9, 0.2);
+  position: relative;
+  overflow: hidden;
+}
+
+.file-actions__btn::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.2);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
 }
 
 .file-actions__btn:hover {
-    background-color: color-mix(in srgb, var(--secondary-color, #0c6a3a) 85%, #000);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(9, 70, 9, 0.3);
+}
+
+.file-actions__btn:hover::before {
+  width: 300px;
+  height: 300px;
 }
 
 .file-actions__btn:active {
-    transform: translateY(0);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(9, 70, 9, 0.2);
 }
 
-@media (prefers-color-scheme: dark) {
-    .background-article {
-        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.35);
-    }
+.file-actions__btn:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(9, 70, 9, 0.3);
+}
+
+/* Conteneur des articles */
+.articles {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  animation: fadeIn 0.5s ease-in;
+}
+
+/* Animation d'apparition */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .background-article {
+    padding: 1.5rem 1rem;
+  }
+
+  .file-actions {
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+  }
+
+  .file-actions__btn {
+    width: 100%;
+    justify-content: center;
+    padding: 0.875rem 1.25rem;
+    font-size: 0.95rem;
+  }
+
+  .articles {
+    gap: 1.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .background-article {
+    padding: 1rem 0.75rem;
+  }
+
+  .file-actions__btn {
+    padding: 0.75rem 1rem;
+    font-size: 0.9rem;
+  }
+
+  .articles {
+    gap: 1.25rem;
+  }
 }

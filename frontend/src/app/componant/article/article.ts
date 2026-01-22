@@ -1,4 +1,4 @@
-import { Component, inject, Input, OnChanges, SimpleChanges, OnDestroy, ChangeDetectorRef, Output, EventEmitter } from '@angular/core';
+import { Component, inject, Input, OnChanges, SimpleChanges, OnDestroy, ChangeDetectorRef, Output, EventEmitter, ViewEncapsulation } from '@angular/core';
 import { ArticleResponse as ArticleModel } from '../../model/article-response.model';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../services/auth.service';
@@ -14,6 +14,7 @@ import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
   imports: [CommonModule],
   templateUrl: './article.html',
   styleUrls: ['./article.css'],
+  encapsulation: ViewEncapsulation.None,
 })
 export class Article implements OnChanges, OnDestroy {
   private auth = inject(AuthService);
