@@ -20,13 +20,44 @@
   z-index: 1000;
 }
 
+.modal__window--compose {
+  width: 50vw;
+  height: 75vh;
+  max-width: 50vw;
+  max-height: 75vh;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+@media (max-width: 900px) {
+  .modal__window--compose {
+    width: 92vw;
+    max-width: 92vw;
+    height: 85vh;
+    max-height: 85vh;
+  }
+}
+
 .modal__title { margin: 0 0 12px; }
-.modal__form { display: flex; flex-direction: column; gap: 10px; }
+.modal__form { display: flex; flex-direction: column; gap: 10px; flex: 1; min-height: 0; }
 .modal__label { display: flex; flex-direction: column; gap: 6px; }
 .modal__input, .modal__textarea { padding: 8px 10px; border-radius: 6px; border: 1px solid #c9c9c9; }
 .modal__actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 6px; }
 .modal__btn { background: #e7e7e7; border: 1px solid #d3d3d3; color: #1a1a1a; padding: 8px 12px; border-radius: 6px; cursor: pointer; }
 .modal__btn--primary { background: #108d4e; border-color: #0c6a3a; color: #ffffff; }
+
+/* Le label "Contenu" doit s'étirer pour que le textarea prenne la place restante */
+.modal__label--content {
+  flex: 1;
+  min-height: 0;
+}
+
+.modal__label--content .modal__textarea {
+  flex: 1;
+  min-height: 200px;
+  resize: none;
+}
 
 /* Upload */
 .upload { display: flex; align-items: center; gap: 10px; }

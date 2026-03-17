@@ -4,6 +4,11 @@ app-article {
 }
 
 /* Mise en page du texte dans le contenu de l'article */
+.article .article-content-text {
+  /* Préserve les sauts de ligne (\n) tout en gardant le retour à la ligne normal */
+  white-space: pre-line;
+}
+
 .article .article-content-text p {
   margin: 1em 0;
   line-height: 1.8;
