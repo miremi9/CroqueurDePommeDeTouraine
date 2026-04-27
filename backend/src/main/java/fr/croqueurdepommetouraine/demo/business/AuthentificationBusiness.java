@@ -26,7 +26,6 @@ public class AuthentificationBusiness {
             throw new RequeteIncorrect("Nom d'utilisateur ou mot de passe incorrect");
         }
         final UserEntity user = userDetailsService.getUserByNom(nom);
-        final String jwt = jwtUtil.generateToken(user);
-        return jwt;
+        return jwtUtil.generateToken(user);
     }
 }

@@ -7,6 +7,7 @@ import org.springframework.core.io.UrlResource;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
@@ -33,11 +34,15 @@ public class FilesGestion {
         }
     }
 
-    public static Resource loadFileAsResource(Path path) throws IOException {
+    public static Resource loadFileAsResource(Path path) {
 
         if (!Files.exists(path)) {
-            throw new IOException("File not found: " + path.toString());
+            throw new InternalErrorException("File not found: " + path);
         }
-        return new UrlResource(path.toUri());
+        try {
+            return new UrlResource(path.toUri());
+        } catch (MalformedURLException e) {
+            throw new InternalErrorException(e.getMessage());
+        }
     }
 }

@@ -7,7 +7,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.UUID;
 
 @RestController
@@ -33,7 +32,7 @@ public class IllustrationRestController {
     }
 
     @GetMapping("/{idIllustration}/file")
-    public ResponseEntity<?> getIllustrationFile(@PathVariable UUID idIllustration) throws IOException {
+    public ResponseEntity<?> getIllustrationFile(@PathVariable UUID idIllustration) {
 
         return ResponseEntity.ok(illustrationBusiness.getIllustrationById(idIllustration));
 

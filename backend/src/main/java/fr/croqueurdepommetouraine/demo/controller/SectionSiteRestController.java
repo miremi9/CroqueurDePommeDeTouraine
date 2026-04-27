@@ -3,7 +3,6 @@ package fr.croqueurdepommetouraine.demo.controller;
 
 import fr.croqueurdepommetouraine.demo.DAO.SectionDAO;
 import fr.croqueurdepommetouraine.demo.business.SectionSiteBusiness;
-import fr.croqueurdepommetouraine.demo.security.JwtUtils;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,7 +16,6 @@ import java.util.List;
 public class SectionSiteRestController {
 
     private final SectionSiteBusiness sectionSiteBusiness;
-    private final JwtUtils jwtUtils;
 
     @PostMapping
     public ResponseEntity<SectionDAO> createSection(@RequestBody SectionDAO section) {

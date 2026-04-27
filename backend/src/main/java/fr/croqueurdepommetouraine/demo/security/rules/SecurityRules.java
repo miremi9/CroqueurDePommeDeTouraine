@@ -8,7 +8,7 @@ import java.util.List;
 public class SecurityRules {
 
     public static List<SecurityRule> rules() {
-        List<SecurityRule> securityRules = List.of(
+        return List.of(
                 SecurityRule.permitAll(HttpMethod.POST, "auth/login"),
                 SecurityRule.permitAll(HttpMethod.POST, "auth/register"),
 
@@ -41,6 +41,5 @@ public class SecurityRules {
                 // Par défaut, tout le reste est authentifié
                 SecurityRule.restricted(null, "/**") // null = toutes méthodes
         );
-        return securityRules;
     }
 }

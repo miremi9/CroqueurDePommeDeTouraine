@@ -8,7 +8,6 @@ import fr.croqueurdepommetouraine.demo.erreurs.AccesInterditException;
 import fr.croqueurdepommetouraine.demo.erreurs.NotFoundException;
 import fr.croqueurdepommetouraine.demo.erreurs.RequeteIncorrect;
 import fr.croqueurdepommetouraine.demo.repository.SectionRepository;
-import fr.croqueurdepommetouraine.demo.repository.UserRepository;
 import fr.croqueurdepommetouraine.demo.security.ROLES;
 import fr.croqueurdepommetouraine.demo.tools.ToolsAuthorisationEndPoint;
 import fr.croqueurdepommetouraine.demo.transformer.RoleMapper;
@@ -29,7 +28,6 @@ public class SectionSiteBusiness {
     private final SectionMapper sectionMapper;
     private final RoleMapper roleMapper;
     private final SectionRepository SectionRepository;
-    private final UserRepository userRepository;
     private final RoleBusiness roleBusiness;
     private final ToolsAuthorisationEndPoint toolsAuthorisationEndPoint;
 
@@ -63,6 +61,7 @@ public class SectionSiteBusiness {
                             .map(r -> roleMapper.toEntity(roleBusiness.getRoleByName(r.getNomRole())))
                             .collect(Collectors.toSet()));
         }
+        assert section.getRolesCanRead() != null;
         section.getRolesCanRead().add(roleMapper.toEntity(roleBusiness.getRoleByName(ROLES.ROLE_ADMIN)));
         if (section.getRolesCanWrite() != null) {
             section.setRolesCanWrite(
@@ -134,7 +133,7 @@ public class SectionSiteBusiness {
 
 
         Optional<SectionSiteEntity> originale = SectionRepository.findById(id);
-        if (!originale.isPresent()) {
+        if (originale.isEmpty()) {
             throw new NotFoundException("Section with id " + id + " not found.");
         }
         updated.setIdSection(id);

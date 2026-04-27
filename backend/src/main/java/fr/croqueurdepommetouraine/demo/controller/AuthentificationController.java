@@ -3,10 +3,8 @@ package fr.croqueurdepommetouraine.demo.controller;
 import fr.croqueurdepommetouraine.demo.business.AuthentificationBusiness;
 import fr.croqueurdepommetouraine.demo.business.UserBusiness;
 import fr.croqueurdepommetouraine.demo.security.AuthRequest;
-import fr.croqueurdepommetouraine.demo.security.JwtUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,9 +16,8 @@ import java.util.Map;
 @RestController
 @RequestMapping("/auth")
 public class AuthentificationController {
-    private final AuthenticationManager authenticationManager;
     private final UserBusiness userDetailsService;
-    private final JwtUtils jwtUtil;
+
     private final AuthentificationBusiness authentificationBusiness;
 
 

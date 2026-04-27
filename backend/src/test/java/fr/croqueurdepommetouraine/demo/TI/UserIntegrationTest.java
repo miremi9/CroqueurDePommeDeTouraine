@@ -65,7 +65,7 @@ class UserIntegrationTest {
         // Vérification de la persistance en base de données
         List<UserEntity> users = userRepository.findAll();
         assertThat(users).hasSize(1);
-        assertThat(users.get(0).getEmail()).isEqualTo("test@mail.com");
+        assertThat(users.getFirst().getEmail()).isEqualTo("test@mail.com");
 
         //verifie que le login return ok + token
         mockMvc.perform(post("/auth/login")
