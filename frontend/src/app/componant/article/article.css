@@ -67,6 +67,16 @@ app-article {
   overflow: hidden;
 }
 
+.article .article-content-text iframe {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  min-height: 315px;
+  margin: 1em 0;
+  border: 0;
+  border-radius: 8px;
+}
+
 .article .article-content-text th
 {
     border: 1px solid rgba(0, 0, 0);

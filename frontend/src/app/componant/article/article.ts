@@ -1,4 +1,4 @@
-import { Component, inject, Input, OnChanges, SimpleChanges, OnDestroy, ChangeDetectorRef, Output, EventEmitter, ViewEncapsulation } from '@angular/core';
+import { Component, inject, Input, OnChanges, SimpleChanges, OnDestroy, ChangeDetectorRef, Output, EventEmitter, ViewEncapsulation, SecurityContext } from '@angular/core';
 import { ArticleResponse as ArticleModel } from '../../model/article-response.model';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../services/auth.service';
@@ -22,6 +22,7 @@ export class Article implements OnChanges, OnDestroy {
   private articleService = inject(ArticleService);
   private cdr = inject(ChangeDetectorRef);
   private sanitizer = inject(DomSanitizer);
+  private static readonly iframePlaceholderPrefix = '[[IFRAME_PLACEHOLDER_';
   
   private imageUrls: Map<string, string> = new Map();
   private illustrationMetadata: Map<string, { fileName: string; isImage: boolean; mimeType?: string }> = new Map();
@@ -190,10 +191,89 @@ export class Article implements OnChanges, OnDestroy {
     if (!this.article?.content) {
       return this.sanitizer.bypassSecurityTrustHtml('');
     }
-    
-    // Sanitiser le HTML pour éviter les XSS tout en permettant les balises <a>
-    const sanitized = this.sanitizer.sanitize(1, this.article.content) || '';
-    return this.sanitizer.bypassSecurityTrustHtml(sanitized);
+
+    const contentWithSafeIframes = this.sanitizeContentWithSafeIframes(this.article.content);
+    return this.sanitizer.bypassSecurityTrustHtml(contentWithSafeIframes);
+  }
+
+  private sanitizeContentWithSafeIframes(rawContent: string): string {
+    const container = document.createElement('div');
+    container.innerHTML = rawContent;
+
+    const safeIframes: string[] = [];
+    const iframeNodes = Array.from(container.querySelectorAll('iframe'));
+
+    iframeNodes.forEach((iframe) => {
+      const safeIframe = this.buildSafeIframe(iframe);
+      if (safeIframe) {
+        const placeholder = document.createTextNode(
+          `${Article.iframePlaceholderPrefix}${safeIframes.length}]]`
+        );
+        safeIframes.push(safeIframe);
+        iframe.replaceWith(placeholder);
+        return;
+      }
+
+      iframe.remove();
+    });
+
+    const sanitizedWithoutIframes =
+      this.sanitizer.sanitize(SecurityContext.HTML, container.innerHTML) || '';
+
+    return this.restoreIframePlaceholders(sanitizedWithoutIframes, safeIframes);
+  }
+
+  private buildSafeIframe(iframe: HTMLIFrameElement): string | null {
+    const src = iframe.getAttribute('src')?.trim() || '';
+    if (!src) {
+      return null;
+    }
+
+    try {
+      const parsedUrl = new URL(src, window.location.origin);
+      if (parsedUrl.protocol !== 'https:') {
+        return null;
+      }
+    } catch {
+      return null;
+    }
+
+    const escapedSrc = this.escapeAttribute(src);
+    const width = this.escapeAttribute(iframe.getAttribute('width') || '560');
+    const height = this.escapeAttribute(iframe.getAttribute('height') || '315');
+    const title = this.escapeAttribute(iframe.getAttribute('title') || 'iframe');
+    const loading = this.escapeAttribute(iframe.getAttribute('loading') || 'lazy');
+    const referrerPolicy = this.escapeAttribute(
+      iframe.getAttribute('referrerpolicy') || 'strict-origin-when-cross-origin'
+    );
+    const allow = this.escapeAttribute(
+      iframe.getAttribute('allow') ||
+        'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share'
+    );
+    const sandbox = this.escapeAttribute(
+      iframe.getAttribute('sandbox') ||
+        'allow-scripts allow-same-origin allow-presentation allow-popups'
+    );
+    const allowFullscreen = iframe.hasAttribute('allowfullscreen') ? ' allowfullscreen' : '';
+
+    return `<iframe src="${escapedSrc}" width="${width}" height="${height}" title="${title}" loading="${loading}" referrerpolicy="${referrerPolicy}" allow="${allow}" sandbox="${sandbox}"${allowFullscreen}></iframe>`;
+  }
+
+  private restoreIframePlaceholders(sanitizedHtml: string, safeIframes: string[]): string {
+    let html = sanitizedHtml;
+    safeIframes.forEach((iframe, index) => {
+      const placeholder = `${Article.iframePlaceholderPrefix}${index}]]`;
+      html = html.replace(placeholder, iframe);
+    });
+    return html;
+  }
+
+  private escapeAttribute(value: string): string {
+    return value
+      .replace(/&/g, '&amp;')
+      .replace(/"/g, '&quot;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
   }
 
   removeIllustration(id: string): void {
