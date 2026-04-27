@@ -19,32 +19,23 @@ public class IllustrationRestController {
 
     @PostMapping
     public ResponseEntity<?> uploadImage(@RequestParam("file") MultipartFile file) {
-        try {
-            IllustrationDAO illustration = illustrationBusiness.createIllustration(file);
-            return ResponseEntity.status(201).body(illustration);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return ResponseEntity.internalServerError().body("Error uploading file");
-        }
+
+        IllustrationDAO illustration = illustrationBusiness.createIllustration(file);
+        return ResponseEntity.status(201).body(illustration);
+
     }
 
     @GetMapping("/{idIllustration}")
     public ResponseEntity<?> getIllustration(@PathVariable UUID idIllustration) {
-        try {
-            return ResponseEntity.ok(illustrationBusiness.getIllustrationDAOById(idIllustration));
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(404).body(e.getMessage());
-        }
+
+        return ResponseEntity.ok(illustrationBusiness.getIllustrationDAOById(idIllustration));
+
     }
 
     @GetMapping("/{idIllustration}/file")
-    public ResponseEntity<?> getIllustrationFile(@PathVariable UUID idIllustration) {
-        try {
-            return ResponseEntity.ok(illustrationBusiness.getIllustrationById(idIllustration));
-        } catch (IOException e) {
-            return ResponseEntity.internalServerError().body("Error retrieving file");
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(404).body(e.getMessage());
-        }
+    public ResponseEntity<?> getIllustrationFile(@PathVariable UUID idIllustration) throws IOException {
+
+        return ResponseEntity.ok(illustrationBusiness.getIllustrationById(idIllustration));
+
     }
 }

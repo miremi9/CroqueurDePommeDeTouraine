@@ -3,6 +3,7 @@ package fr.croqueurdepommetouraine.demo.business;
 
 import fr.croqueurdepommetouraine.demo.DAO.IllustrationDAO;
 import fr.croqueurdepommetouraine.demo.Entity.IllustrationEntity;
+import fr.croqueurdepommetouraine.demo.erreurs.NotFoundException;
 import fr.croqueurdepommetouraine.demo.repository.IllustrationRepository;
 import fr.croqueurdepommetouraine.demo.tools.FilesGestion;
 import fr.croqueurdepommetouraine.demo.transformer.IllustrationMapper;
@@ -44,14 +45,14 @@ public class IllustrationBusiness {
 
     public IllustrationDAO getIllustrationDAOById(UUID idIllustration) {
         IllustrationEntity illustrationEntity = illustrationRepository.findById(idIllustration)
-                .orElseThrow(() -> new RuntimeException("Illustration not found with id: " + idIllustration));
+                .orElseThrow(() -> new NotFoundException("Illustration not found with id: " + idIllustration));
         return illustrationMapper.toDAO(illustrationEntity);
     }
 
     public Resource getIllustrationById(UUID idIllustration) throws IOException {
 
         IllustrationEntity illustrationEntity = illustrationRepository.findById(idIllustration)
-                .orElseThrow(() -> new RuntimeException("Illustration not found with id: " + idIllustration));
+                .orElseThrow(() -> new NotFoundException("Illustration not found with id: " + idIllustration));
 
         Path path = Paths.get(illustrationEntity.getPath());
         path = Paths.get(UPLOAD_DIR).resolve(path);

@@ -2,6 +2,7 @@ package fr.croqueurdepommetouraine.demo.business;
 
 import fr.croqueurdepommetouraine.demo.DAO.SiteBodyDAO;
 import fr.croqueurdepommetouraine.demo.Entity.SiteBodyEntity;
+import fr.croqueurdepommetouraine.demo.erreurs.NotFoundException;
 import fr.croqueurdepommetouraine.demo.repository.SiteBodyRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,9 +21,15 @@ public class SiteBodyBusiness {
      */
     public SiteBodyDAO getSiteBody() {
         List<SiteBodyEntity> entities = siteBodyRepository.findAll();
-        if (entities.isEmpty()) return null;
+        if (entities.isEmpty()) {
+            throw new NotFoundException("Aucun contenu de site trouvé en base.");
+        }
         SiteBodyEntity entity = entities.getFirst();
-        if (entity == null) return null;
+        if (entity == null) {
+            throw new NotFoundException("Aucun contenu de site trouvé en base.");
+        }
+        SiteBodyDAO siteBodyDAO = toDAO(entity);
+
         return toDAO(entity);
     }
 

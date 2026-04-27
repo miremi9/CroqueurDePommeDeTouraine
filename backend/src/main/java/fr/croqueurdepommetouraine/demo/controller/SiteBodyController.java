@@ -19,11 +19,7 @@ public class SiteBodyController {
      */
     @GetMapping
     public ResponseEntity<SiteBodyDAO> getSiteBody() {
-        SiteBodyDAO dao = siteBodyBusiness.getSiteBody();
-        if (dao == null) {
-            return ResponseEntity.noContent().build();
-        }
-        return ResponseEntity.ok(dao);
+        return ResponseEntity.ok(siteBodyBusiness.getSiteBody());
     }
 
     /**
@@ -32,7 +28,6 @@ public class SiteBodyController {
      */
     @PutMapping
     public ResponseEntity<SiteBodyDAO> updateSiteBody(@RequestBody SiteBodyDAO dao) {
-        SiteBodyDAO updated = siteBodyBusiness.updateSiteBody(dao);
-        return ResponseEntity.ok(updated);
+        return ResponseEntity.ok(siteBodyBusiness.updateSiteBody(dao));
     }
 }

@@ -27,4 +27,10 @@ public class GlobalExceptionHandler {
                 .body(Map.of("Accès interdit :", ex.getMessage()));
     }
 
+    @ExceptionHandler(InternalErrorException.class)
+    public ResponseEntity<?> handleInternalError(InternalErrorException ex) {
+        return ResponseEntity.status(500)
+                .body(Map.of("Erreur interne :", ex.getMessage()));
+    }
+
 }
