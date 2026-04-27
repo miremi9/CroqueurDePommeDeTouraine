@@ -1,0 +1,11 @@
+{
+  "idSection": 1,
+  "title": "Mon premier article",
+  "content": "Contenu de l'article en texte long...",
+  "author": "admin",
+  "dateCreation": "2026-04-27T10:00:00",
+  "changed": false,
+  "supprimed": false,
+  "pathsImages": [],
+  "supprime": false
+}

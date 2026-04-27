@@ -3,6 +3,7 @@ package fr.croqueurdepommetouraine.demo.Entity;
 import jakarta.persistence.*;
 import lombok.Data;
 
+import java.time.LocalDateTime;
 import java.util.Set;
 import java.util.UUID;
 
@@ -18,4 +19,9 @@ public class UserEntity {
     String motDePasse;
     @ManyToMany(fetch = FetchType.EAGER)
     Set<RoleEntity> roles;
+    @Column(unique = true)
+    String email;
+    String resetPasswordToken;
+    LocalDateTime resetPasswordTokenExpiry;
+
 }

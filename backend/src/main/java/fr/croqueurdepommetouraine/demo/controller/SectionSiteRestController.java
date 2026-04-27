@@ -10,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping("/sections")
@@ -37,24 +36,19 @@ public class SectionSiteRestController {
     @GetMapping("/{id}")
     public ResponseEntity<SectionDAO> getSectionById(@PathVariable Long id,
                                                      @RequestHeader(value = "Authorization", required = false) String authHeader) {
-        try {
-            SectionDAO section = sectionSiteBusiness.getSectionByIdWithAuth(id, authHeader);
-            return ResponseEntity.ok(section); // 200 OK
-        } catch (NoSuchElementException e) {
-            return ResponseEntity.notFound().build(); // 404 Not Found
-        }
+        SectionDAO section = sectionSiteBusiness.getSectionByIdWithAuth(id, authHeader);
+        return ResponseEntity.ok(section); // 200 OK
+
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<SectionDAO> updateSection(
             @PathVariable Long id,
             @RequestBody SectionDAO updatedSection) {
-        try {
-            SectionDAO section = sectionSiteBusiness.updateSection(id, updatedSection);
-            return ResponseEntity.ok(section);
-        } catch (NoSuchElementException e) {
-            return ResponseEntity.notFound().build();
-        }
+
+        SectionDAO section = sectionSiteBusiness.updateSection(id, updatedSection);
+        return ResponseEntity.ok(section);
+
     }
 
     @DeleteMapping("/{id}")

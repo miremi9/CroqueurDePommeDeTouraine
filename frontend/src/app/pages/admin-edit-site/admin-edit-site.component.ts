@@ -18,6 +18,7 @@ export class AdminEditSiteComponent implements OnInit, OnDestroy {
 
   form: FormGroup = this.fb.nonNullable.group({
     titre: ['', Validators.required],
+    url: [''],
     basDePage: ['', Validators.required],
     couleurPrincipale: ['#094609', Validators.required],
     couleurSecondaire: ['#0c6a3a', Validators.required],
@@ -103,7 +104,7 @@ export class AdminEditSiteComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const { titre, basDePage, couleurPrincipale, couleurSecondaire } = this.form.getRawValue();
+    const { titre, url, basDePage, couleurPrincipale, couleurSecondaire } = this.form.getRawValue();
     
     let logoValue = '';
     if (this.shouldRemoveLogo) {
@@ -116,6 +117,7 @@ export class AdminEditSiteComponent implements OnInit, OnDestroy {
 
     const payload: SiteBodyResponse = {
       titre,
+      url,
       basDePage,
       couleurPrincipale,
       couleurSecondaire,
@@ -151,6 +153,7 @@ export class AdminEditSiteComponent implements OnInit, OnDestroy {
     this.revokePreviewObjectUrl();
     this.form.patchValue({
       titre: siteBody.titre ?? '',
+      url: siteBody.url ?? '',
       basDePage: siteBody.basDePage ?? '',
       couleurPrincipale: siteBody.couleurPrincipale ?? '#094609',
       couleurSecondaire: siteBody.couleurSecondaire ?? '#0c6a3a',

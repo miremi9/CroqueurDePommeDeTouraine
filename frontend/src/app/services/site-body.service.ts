@@ -93,6 +93,7 @@ export class SiteBodyService {
       couleurPrincipale: '#094609',
       couleurSecondaire: '#0c6a3a',
       logo: '',
+      url: '',
     };
   }
 }

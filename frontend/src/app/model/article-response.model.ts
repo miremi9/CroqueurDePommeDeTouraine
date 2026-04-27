@@ -38,4 +38,5 @@ export interface SiteBodyResponse {
   basDePage: string;
   couleurPrincipale: string; // hexa de la couleur principale
   couleurSecondaire: string; // hexa de la couleur secondaire
+  url: string;
 }

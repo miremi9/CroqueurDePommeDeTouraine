@@ -16,9 +16,11 @@ export class AuthWidgetComponent implements OnInit {
 
   isAuthenticated = false;
   showModal = false;
-  modalMode: 'login' | 'register' = 'login';
+  modalMode: 'login' | 'register' | 'reset' = 'login';
   username = '';
   password = '';
+  resetToken = '';
+  resetNewPassword = '';
   errorMessage: string | null = null;
   lastAuthError: string | null = null;
 
@@ -38,7 +40,7 @@ export class AuthWidgetComponent implements OnInit {
 
   ngOnInit() {
     // Récupérer le nom d'utilisateur au démarrage si déjà authentifié
-    if (this.authService.getToken()) {
+    if (this.authService.getToken() && !this.authService.isTokenExpired()) {
       this.username = this.authService.getUsername() || '';
       this.cdr.detectChanges();
     }
@@ -50,6 +52,8 @@ export class AuthWidgetComponent implements OnInit {
     this.lastAuthError = null;
     this.username = '';
     this.password = '';
+    this.resetToken = '';
+    this.resetNewPassword = '';
     this.showModal = true;
     this.cdr.detectChanges();
   }
@@ -60,6 +64,8 @@ export class AuthWidgetComponent implements OnInit {
     this.lastAuthError = null;
     this.username = '';
     this.password = '';
+    this.resetToken = '';
+    this.resetNewPassword = '';
     this.showModal = true;
     this.cdr.detectChanges();
   }
@@ -72,7 +78,7 @@ export class AuthWidgetComponent implements OnInit {
   onSubmit() {
     this.errorMessage = null;
     const cred = { nom: this.username.trim(), motDePasse: this.password };
-    if (!cred.nom || !cred.motDePasse) {
+    if (this.modalMode !== 'reset' && (!cred.nom || !cred.motDePasse)) {
       this.errorMessage = 'Veuillez renseigner les champs.';
       return;
     }
@@ -94,6 +100,8 @@ export class AuthWidgetComponent implements OnInit {
           this.cdr.detectChanges();
         }
       });
+    } else if (this.modalMode === 'reset') {
+      this.onResetSubmit();
     } else {
       this.authService.register(cred).subscribe({
         next: () => {
@@ -112,6 +120,54 @@ export class AuthWidgetComponent implements OnInit {
         }
       });
     }
+  }
+
+  onForgotPassword(): void {
+    this.errorMessage = null;
+    const email = window.prompt('Entrez votre email pour recevoir le lien de réinitialisation :')?.trim();
+    if (!email) {
+      return;
+    }
+
+    this.authService.forgotPassword({ email }).subscribe({
+      next: () => {
+        alert('Mail envoyé');
+        this.modalMode = 'reset';
+        this.resetToken = '';
+        this.resetNewPassword = '';
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        const apiMsg = err?.error?.message || err?.error || err?.message;
+        this.errorMessage = apiMsg ? String(apiMsg) : 'Échec de l’envoi du mail de réinitialisation.';
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  private onResetSubmit(): void {
+    const token = this.resetToken.trim();
+    const newPassword = this.resetNewPassword;
+    if (!token || !newPassword) {
+      this.errorMessage = 'Veuillez renseigner le token et le nouveau mot de passe.';
+      return;
+    }
+
+    this.authService.resetPassword({ token, newPassword }).subscribe({
+      next: () => {
+        alert('Mot de passe réinitialisé avec succès');
+        this.modalMode = 'login';
+        this.password = '';
+        this.resetToken = '';
+        this.resetNewPassword = '';
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        const apiMsg = err?.error?.message || err?.error || err?.message;
+        this.errorMessage = apiMsg ? String(apiMsg) : 'Échec de la réinitialisation du mot de passe.';
+        this.cdr.detectChanges();
+      }
+    });
   }
 
   logout() {

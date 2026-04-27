@@ -1,0 +1,12 @@
+{
+  "nom": "Section Test CHILD",
+  "path": "section-test-child",
+  "idParent": 1,
+  "supprimed": false,
+  "rolesCanRead": [
+    "USER"
+  ],
+  "rolesCanWrite": [
+    "ADMIN"
+  ]
+}

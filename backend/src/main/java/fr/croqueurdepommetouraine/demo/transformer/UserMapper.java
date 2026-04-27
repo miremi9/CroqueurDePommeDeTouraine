@@ -21,6 +21,7 @@ public abstract class UserMapper {
     @Mapping(source = "nom", target = "nom")
     @Mapping(source = "idUser", target = "idUser")
     @Mapping(ignore = true, target = "roles")
+    @Mapping(source = "email", target = "email")
     public abstract UserDAO toDAO(UserEntity userEntity);
 
     @AfterMapping
@@ -35,6 +36,7 @@ public abstract class UserMapper {
     @Mapping(source = "nom", target = "nom")
     @Mapping(source = "idUser", target = "idUser")
     @Mapping(ignore = true, target = "roles")
+    @Mapping(source = "email", target = "email")
     public abstract UserEntity toEntity(UserDAO userDAO);
 
     @AfterMapping

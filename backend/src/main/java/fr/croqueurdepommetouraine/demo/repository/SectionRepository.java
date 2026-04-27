@@ -6,5 +6,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface SectionRepository extends JpaRepository<SectionSiteEntity, Long> {
+    boolean existsByPath(String path);
 
 }

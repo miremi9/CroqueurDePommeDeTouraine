@@ -5,6 +5,9 @@ import fr.croqueurdepommetouraine.demo.Entity.ArticleEntity;
 import fr.croqueurdepommetouraine.demo.Entity.IllustrationEntity;
 import fr.croqueurdepommetouraine.demo.Entity.SectionSiteEntity;
 import fr.croqueurdepommetouraine.demo.Entity.UserEntity;
+import fr.croqueurdepommetouraine.demo.erreurs.AccesInterditException;
+import fr.croqueurdepommetouraine.demo.erreurs.NotFoundException;
+import fr.croqueurdepommetouraine.demo.erreurs.RequeteIncorrect;
 import fr.croqueurdepommetouraine.demo.repository.ArticleRepository;
 import fr.croqueurdepommetouraine.demo.repository.IllustrationRepository;
 import fr.croqueurdepommetouraine.demo.repository.SectionRepository;
@@ -55,7 +58,7 @@ public class ArticleBusiness {
     public List<ArticleDAO> getArticlesBySection(Long idSection, String authHeader) {
 
         if (!toolsAuthorisationEndPoint.CanReadThisSection(authHeader, idSection)) {
-            throw new IllegalArgumentException("Pas les droits pour lire cette section");
+            throw new AccesInterditException("Pas les droits pour lire cette section");
         }
         List<ArticleEntity> articles = articleRepository.findBySection_IdSection(idSection);
         return articles.stream().map(articleMapper::toDAO).toList();
@@ -76,7 +79,7 @@ public class ArticleBusiness {
 
 
         if (!toolsAuthorisationEndPoint.CanWriteSection(articleEntity.getSection(), articleEntity.getAuthor())) {
-            throw new IllegalArgumentException("Pas les droits pour écrire dans cette section");
+            throw new AccesInterditException("Pas les droits pour écrire dans cette section");
         }
 
         ArticleEntity savedArticle = articleRepository.save(articleEntity);
@@ -85,37 +88,39 @@ public class ArticleBusiness {
 
     private void checkArticleValide(ArticleEntity article) {
         if (article.getSection() == null || article.getSection().getIdSection() == null) {
-            throw new RuntimeException("Section must be specified for the article.");
+            throw new RequeteIncorrect("Section must be specified for the article.");
         }
         if (article.getTitle() == null || article.getTitle().isBlank()) {
-            throw new RuntimeException("Title must be specified for the article.");
+            throw new RequeteIncorrect("Title must be specified for the article.");
         }
     }
 
     private void loadIllustration(ArticleEntity article) {
+        if (article.getPathsImages() == null) {
+            return;
+        }
         for (IllustrationEntity illustration : article.getPathsImages()) {
             try {
                 illustration = illustrationRepository.getReferenceById(illustration.getIdIllustration());
             } catch (RuntimeException e) {
-                throw new RuntimeException("Illustration with id " + illustration + " not found.");
+                throw new NotFoundException("Illustration with id " + illustration + " not found.");
             }
         }
     }
 
     private void loadSection(ArticleEntity article) {
-        try {
-            SectionSiteEntity section = sectionRepository.getReferenceById(article.getSection().getIdSection());
-            article.setSection(section);
-        } catch (Exception e) {
-            throw new IllegalArgumentException("Section with id " + article.getSection().getIdSection() + " not found");
-        }
+
+        SectionSiteEntity section = sectionRepository.findById(article.getSection().getIdSection())
+                .orElseThrow(() ->
+                        new NotFoundException("Section with id " + article.getSection().getIdSection() + " not found"));
+
     }
 
     public void deleteArticle(UUID idArticle, String username, List<String> roles) {
         Optional<ArticleEntity> article = articleRepository.findById(idArticle);
 
         if (article.isEmpty()) {
-            throw new RuntimeException("Article not found with id: " + idArticle);
+            throw new NotFoundException("Article not found with id: " + idArticle);
         }
         // If l'utilisateur est admin ou moderateur, il peut supprimer n'importe quel article
         if (roles.contains(ROLES.ROLE_ADMIN) || roles.contains(ROLES.ROLE_MODERATOR)) {
@@ -124,7 +129,7 @@ public class ArticleBusiness {
         }
         // Sinon, il ne peut supprimer que ses propres articles
         if (!article.get().getAuthor().getNom().equals(username)) {
-            throw new RuntimeException("Access denied: You are not the author of this article.");
+            throw new AccesInterditException("Access denied: You are not the author of this article.");
         }
         article.get().setSupprime(true);
         articleRepository.save(article.get());
@@ -132,19 +137,19 @@ public class ArticleBusiness {
 
     public ArticleDAO updateArticle(ArticleDAO articleDAO, String username, List<String> roles) {
         if (articleDAO.getIdArticle() == null) {
-            throw new RuntimeException("Id de l'article doit être spécifié.");
+            throw new RequeteIncorrect("Id de l'article doit être spécifié.");
         }
 
         Optional<ArticleEntity> existingOpt = articleRepository.findById(articleDAO.getIdArticle());
         if (existingOpt.isEmpty()) {
-            throw new RuntimeException("Article not found with id: " + articleDAO.getIdArticle());
+            throw new NotFoundException("Article not found with id: " + articleDAO.getIdArticle());
         }
         ArticleEntity existing = existingOpt.get();
 
         // Autorisation: admin/modérateur peuvent tout faire, sinon seul l'auteur peut modifier
         if (!(roles.contains(ROLES.ROLE_ADMIN) || roles.contains(ROLES.ROLE_MODERATOR))) {
             if (existing.getAuthor() == null || !existing.getAuthor().getNom().equals(username)) {
-                throw new RuntimeException("Access denied: You are not the author of this article.");
+                throw new AccesInterditException("Access denied: You are not the author of this article.");
             }
         }
 

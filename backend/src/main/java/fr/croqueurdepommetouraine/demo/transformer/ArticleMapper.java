@@ -24,7 +24,9 @@ public interface ArticleMapper {
     @AfterMapping
     default void handlePathsImagesAfterMapping(ArticleEntity entity, @MappingTarget ArticleDAO dao) {
         if (entity.getPathsImages() == null) {
+            entity.setPathsImages(new ArrayList<>());
             return;
+
         }
         dao.setIdIllustrationDAOS(entity.getPathsImages()
                 .stream()

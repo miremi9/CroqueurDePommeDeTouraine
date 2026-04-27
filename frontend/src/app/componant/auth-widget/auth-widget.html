@@ -12,20 +12,36 @@
 @if (showModal) {
   <div class="modal__backdrop" (click)="closeModal()"></div>
   <div class="modal__window" role="dialog" aria-modal="true">
-    <h3 class="modal__title">{{ modalMode === 'login' ? 'Connexion' : 'Inscription' }}</h3>
+    <h3 class="modal__title">
+      {{ modalMode === 'login' ? 'Connexion' : (modalMode === 'register' ? 'Inscription' : 'Réinitialisation du mot de passe') }}
+    </h3>
     <form (ngSubmit)="onSubmit()" class="modal__form">
-      <label class="modal__label">
-        <span>Nom d'utilisateur</span>
-        <input class="modal__input" type="text" [(ngModel)]="username" name="username" required />
-      </label>
-      <label class="modal__label">
-        <span>Mot de passe</span>
-        <input class="modal__input" type="password" [(ngModel)]="password" name="password" required />
-      </label>
+      @if (modalMode !== 'reset') {
+        <label class="modal__label">
+          <span>Nom d'utilisateur</span>
+          <input class="modal__input" type="text" [(ngModel)]="username" name="username" required />
+        </label>
+        <label class="modal__label">
+          <span>Mot de passe</span>
+          <input class="modal__input" type="password" [(ngModel)]="password" name="password" required />
+        </label>
+      } @else {
+        <label class="modal__label">
+          <span>Token de réinitialisation</span>
+          <input class="modal__input" type="text" [(ngModel)]="resetToken" name="resetToken" required />
+        </label>
+        <label class="modal__label">
+          <span>Nouveau mot de passe</span>
+          <input class="modal__input" type="password" [(ngModel)]="resetNewPassword" name="resetNewPassword" required />
+        </label>
+      }
       <div class="modal__actions">
         <button type="button" class="modal__btn" (click)="closeModal()">Annuler</button>
+        @if (modalMode === 'login') {
+          <button type="button" class="modal__btn" (click)="onForgotPassword()">Mot de passe oublié ?</button>
+        }
         <button type="submit" class="modal__btn modal__btn--primary">
-          {{ modalMode === 'login' ? 'Se connecter' : "S'inscrire" }}
+          {{ modalMode === 'login' ? 'Se connecter' : (modalMode === 'register' ? "S'inscrire" : 'Réinitialiser') }}
         </button>
       </div>
       @if (errorMessage) {

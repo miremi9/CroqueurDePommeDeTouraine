@@ -44,6 +44,7 @@ public class DataInitializer {
                 siteBody.setTitre("Titre");
                 siteBody.setCouleurSecondaire("#4CAF50");
                 siteBody.setCouleurPrincipale("#FF9800");
+                siteBody.setUrl("mon-site.com");
                 siteBodyRepository.save(siteBody);
             } else {
                 logger.info("Données de SiteBody déjà initialisées ({} enregistrements)", count);

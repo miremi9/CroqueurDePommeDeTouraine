@@ -1,0 +1,8 @@
+{
+  "nom": "Section Updated",
+  "path": "/updated-path",
+  "supprimed": false,
+  "parent": null,
+  "rolesCanRead": [],
+  "rolesCanWrite": []
+}

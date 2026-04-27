@@ -23,6 +23,7 @@ public class AuthentificationController {
     private final UserBusiness userDetailsService;
     private final JwtUtils jwtUtil;
 
+    // Endpoint pour l'authentification d'un utilisateur
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody AuthRequest request) {
         try {
@@ -40,12 +41,14 @@ public class AuthentificationController {
         return ResponseEntity.ok(Map.of("token", jwt));
     }
 
+    // Endpoint pour l'inscription d'un nouvel utilisateur
     @PostMapping("/register")
     public ResponseEntity<?> register(@RequestBody AuthRequest request) {
         try {
             String nom = request.getNom();
             String motDePasse = request.getMotDePasse();
-            userDetailsService.registerUser(nom, motDePasse);
+            String email = request.getEmail();
+            userDetailsService.registerUser(nom, motDePasse, email);
             return ResponseEntity.ok("User registered successfully");
         } catch (IllegalArgumentException ex) {
             return ResponseEntity

@@ -41,6 +41,7 @@ public class SiteBodyBusiness {
         entity.setLogo(dao.getLogo());
         entity.setCouleurPrincipale(dao.getCouleurPrincipale());
         entity.setCouleurSecondaire(dao.getCouleurSecondaire());
+        entity.setUrl(dao.getUrl());
 
         SiteBodyEntity saved = siteBodyRepository.save(entity);
         return toDAO(saved);
@@ -56,6 +57,7 @@ public class SiteBodyBusiness {
         dao.setLogo(entity.getLogo());
         dao.setCouleurPrincipale(entity.getCouleurPrincipale());
         dao.setCouleurSecondaire(entity.getCouleurSecondaire());
+        dao.setUrl(entity.getUrl());
         return dao;
     }
 }

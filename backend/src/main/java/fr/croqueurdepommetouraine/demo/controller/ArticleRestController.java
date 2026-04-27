@@ -10,7 +10,9 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.*;
+import java.util.Date;
+import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/articles")
@@ -35,29 +37,9 @@ public class ArticleRestController {
     @GetMapping("/bySection")
     public ResponseEntity<?> getArticlesBySection(@RequestParam(value = "idSection") Long idSection,
                                                   @RequestHeader(value = "Authorization", required = false) String authHeader) {
-        try {
-            List<ArticleDAO> articles = articleBusiness.getArticlesBySection(idSection, authHeader);
-            return ResponseEntity.ok(articles);
+        List<ArticleDAO> articles = articleBusiness.getArticlesBySection(idSection, authHeader);
+        return ResponseEntity.ok(articles);
 
-        } catch (IllegalArgumentException e) {
-            // par exemple idSection invalide
-            return ResponseEntity
-                    .badRequest()
-                    .body("Paramètre invalide : " + e.getMessage());
-
-        } catch (NoSuchElementException e) {
-            // par exemple section non trouvée dans le business
-            return ResponseEntity
-                    .status(HttpStatus.NOT_FOUND)
-                    .body("Section introuvable : " + e.getMessage());
-
-        } catch (Exception e) {
-            // toute autre exception inattendue
-            e.printStackTrace(); // log côté serveur pour debug
-            return ResponseEntity
-                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body("Erreur interne du serveur : " + e.getMessage());
-        }
     }
 
 
@@ -67,12 +49,9 @@ public class ArticleRestController {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String username = auth.getName();
         article.setDateCreation(Date.from(new Date().toInstant()));
-        try {
-            return new ResponseEntity<>(this.articleBusiness.createArticle(article, username), HttpStatus.OK);
-        } catch (RuntimeException e) {
-            Map<String, String> errorBody = Map.of("error", e.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorBody);
-        }
+
+        return new ResponseEntity<>(this.articleBusiness.createArticle(article, username), HttpStatus.CREATED);
+
 
     }
 
@@ -83,33 +62,27 @@ public class ArticleRestController {
         List<String> roles = auth.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .toList();
-        try {
-            articleBusiness.deleteArticle(idArticle, username, roles);
-            return ResponseEntity.ok("Article supprimé avec succès");
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        }
+
+        articleBusiness.deleteArticle(idArticle, username, roles);
+        return ResponseEntity.ok("Article supprimé avec succès");
+
     }
 
     @PutMapping("{idArticle}")
-    public ResponseEntity<?> updateArticle(@PathVariable String idArticle, @RequestBody ArticleDAO article) {
+    public ResponseEntity<ArticleDAO> updateArticle(
+            @PathVariable String idArticle,
+            @RequestBody ArticleDAO article) {
+
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
         String username = auth.getName();
         List<String> roles = auth.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .toList();
 
-        try {
-            ArticleDAO updated = this.articleBusiness.updateArticle(article, username, roles);
-            return ResponseEntity.ok(updated);
-        } catch (RuntimeException e) {
-            Map<String, String> errorBody = Map.of("error", e.getMessage());
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorBody);
-        } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("error", "Erreur interne du serveur"));
-        }
+        ArticleDAO updated = articleBusiness.updateArticle(article, username, roles);
+
+        return ResponseEntity.ok(updated);
     }
 
 }

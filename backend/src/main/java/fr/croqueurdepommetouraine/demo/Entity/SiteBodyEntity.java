@@ -12,11 +12,12 @@ public class SiteBodyEntity {
     Long id;
     String titre;
     @Lob
-    @Column(columnDefinition = "MEDIUMTEXT")
+    @Column
     String BasDePage;
-    @Column(columnDefinition = "MEDIUMTEXT")
+    @Column
     @Lob
     String logo;
     String CouleurPrincipale;
     String CouleurSecondaire;
+    String Url;
 }

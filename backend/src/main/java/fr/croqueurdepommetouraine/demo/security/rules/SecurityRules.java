@@ -23,6 +23,8 @@ public class SecurityRules {
 
                 SecurityRule.restricted(HttpMethod.GET, "/users", ROLES.ROLE_ADMIN),
                 SecurityRule.restricted(HttpMethod.PUT, "/users/**", ROLES.ROLE_ADMIN),
+                SecurityRule.permitAll(HttpMethod.POST, "/users/forgot-password"),
+                SecurityRule.permitAll(HttpMethod.POST, "/users/reset-password"),
 
                 SecurityRule.permitAll(HttpMethod.GET, "/sections"),
                 SecurityRule.restricted(HttpMethod.POST, "/sections", ROLES.ROLE_ADMIN),

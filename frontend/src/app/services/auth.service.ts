@@ -12,6 +12,15 @@ interface Credentials {
   motDePasse: string;
 }
 
+interface ForgotPasswordPayload {
+  email: string;
+}
+
+interface ResetPasswordPayload {
+  token: string;
+  newPassword: string;
+}
+
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   getUsername(): string | null {
@@ -44,6 +53,14 @@ export class AuthService {
       .pipe(tap(res => this.setToken(res.token)));
   }
 
+  forgotPassword(payload: ForgotPasswordPayload): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(`${environment.apiUrl}/users/forgot-password`, payload);
+  }
+
+  resetPassword(payload: ResetPasswordPayload): Observable<{ message: string }> {
+    return this.http.post<{ message: string }>(`${environment.apiUrl}/users/reset-password`, payload);
+  }
+
   logout(): void {
     localStorage.removeItem(this.tokenKey);
     this.authenticatedSubject.next(false);
@@ -61,7 +78,11 @@ export class AuthService {
   }
 
   private hasToken(): boolean {
-    return !!localStorage.getItem(this.tokenKey);
+    const token = localStorage.getItem(this.tokenKey);
+    if (!token) {
+      return false;
+    }
+    return !this.isTokenExpired();
   }
 
   getRoles(): string[] {

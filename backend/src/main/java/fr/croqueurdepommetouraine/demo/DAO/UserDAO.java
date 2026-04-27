@@ -10,4 +10,5 @@ public class UserDAO {
     private UUID idUser;
     private String nom;
     private List<String> roles;
+    private String email;
 }

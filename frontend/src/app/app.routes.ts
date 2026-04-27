@@ -7,6 +7,7 @@ import { AdminEditRoleComponent } from './pages/admin-edit-users/admin-edit-user
 import { AdminEditRolePageComponent } from './pages/admin-edit-role/admin-edit-role.component';
 import { AdminEditSiteComponent } from './pages/admin-edit-site/admin-edit-site.component';
 import { adminGuard } from './guards/admin.guard';
+import { ResetPasswordComponent } from './pages/reset-password/reset-password.component';
 
 /**
  * Routes statiques de base de l'application
@@ -48,6 +49,11 @@ export const baseRoutes: Routes = [
     component: AdminEditSiteComponent,
     canActivate: [adminGuard],
     data: { title: 'Edit Site' }
+  },
+  {
+    path: 'reset-password',
+    component: ResetPasswordComponent,
+    data: { title: 'Reset Password' }
   },
 ];
 

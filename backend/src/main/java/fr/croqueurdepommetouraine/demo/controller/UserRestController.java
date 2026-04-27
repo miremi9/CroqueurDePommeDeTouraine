@@ -9,6 +9,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 
@@ -51,5 +52,54 @@ public class UserRestController {
                     .body("Internal server error: " + e.getMessage());
         }
 
+    }
+
+    @PostMapping("/forgot-password")
+    public ResponseEntity<?> forgotPassword(@RequestBody Map<String, String> request) {
+        try {
+            String email = request.get("email");
+            if (email == null || email.isEmpty()) {
+                return ResponseEntity
+                        .badRequest()
+                        .body("Email is required");
+            }
+            userBusiness.forgotPassword(email);
+            return ResponseEntity.ok(Map.of(
+                    "message", "Password reset email sent successfully. Please check your email."
+            ));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity
+                    .status(404)
+                    .body("User not found: " + e.getMessage());
+        }
+    }
+
+    @PostMapping("/reset-password")
+    public ResponseEntity<?> resetPassword(@RequestBody Map<String, String> request) {
+        try {
+            String token = request.get("token");
+            String newPassword = request.get("newPassword");
+
+            if (token == null || token.isEmpty() || newPassword == null || newPassword.isEmpty()) {
+                return ResponseEntity
+                        .badRequest()
+                        .body("Token and newPassword are required");
+            }
+
+            userBusiness.resetPassword(token, newPassword);
+            return ResponseEntity.ok(Map.of(
+                    "message", "Password reset successfully"
+            ));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity
+                    .badRequest()
+                    .body(e.getMessage());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity
+                    .status(500)
+                    .body("Internal server error: " + e.getMessage());
+        }
     }
 }

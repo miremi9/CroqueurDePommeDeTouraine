@@ -45,7 +45,12 @@ public class ToolsAuthorisationEndPoint {
             return false;
         }
 
-        Set<RoleEntity> rolesNeeded = section.getRolesCanWrite();
+        Set<RoleEntity> rolesNeeded = section.getRolesCanWrite() == null
+                ? new HashSet<>()
+                : section.getRolesCanWrite();
+        if (rolesNeeded.isEmpty()) {
+            return true;
+        }
         Set<RoleEntity> rolesUser = user.getRoles();
         return (rolesUser.stream().anyMatch(rolesNeeded::contains));
     }
