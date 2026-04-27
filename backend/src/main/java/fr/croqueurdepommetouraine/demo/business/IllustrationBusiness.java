@@ -63,11 +63,7 @@ public class IllustrationBusiness {
         Path path = Paths.get(illustrationEntity.getPath());
         path = Paths.get(UPLOAD_DIR).resolve(path);
 
-        try {
-            return FilesGestion.loadFileAsResource(path);
-        } catch (IOException e) {
-            throw new InternalErrorException("Could not load file");
-        }
+        return FilesGestion.loadFileAsResource(path);
 
     }
 }
