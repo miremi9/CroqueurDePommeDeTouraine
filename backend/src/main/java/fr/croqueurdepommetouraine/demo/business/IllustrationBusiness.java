@@ -3,6 +3,7 @@ package fr.croqueurdepommetouraine.demo.business;
 
 import fr.croqueurdepommetouraine.demo.DAO.IllustrationDAO;
 import fr.croqueurdepommetouraine.demo.Entity.IllustrationEntity;
+import fr.croqueurdepommetouraine.demo.erreurs.InternalErrorException;
 import fr.croqueurdepommetouraine.demo.erreurs.NotFoundException;
 import fr.croqueurdepommetouraine.demo.repository.IllustrationRepository;
 import fr.croqueurdepommetouraine.demo.tools.FilesGestion;
@@ -27,13 +28,18 @@ public class IllustrationBusiness {
     private final IllustrationRepository illustrationRepository;
 
 
-    public IllustrationDAO createIllustration(MultipartFile file) throws IOException {
+    public IllustrationDAO createIllustration(MultipartFile file) {
 
         Path uploadPath = Paths.get(UPLOAD_DIR);
         String fileName = System.currentTimeMillis() + "_" + file.getOriginalFilename();
         Path filePath = uploadPath.resolve(fileName);
 
-        FilesGestion.saveFile(file.getInputStream(), filePath);
+        try {
+            FilesGestion.saveFile(file.getInputStream(), filePath);
+        } catch (IOException e) {
+            throw new InternalErrorException("Could not create upload directory");
+        }
+
 
         IllustrationEntity illustrationEntity = new IllustrationEntity();
         illustrationEntity.setPath(fileName);
@@ -49,7 +55,7 @@ public class IllustrationBusiness {
         return illustrationMapper.toDAO(illustrationEntity);
     }
 
-    public Resource getIllustrationById(UUID idIllustration) throws IOException {
+    public Resource getIllustrationById(UUID idIllustration) {
 
         IllustrationEntity illustrationEntity = illustrationRepository.findById(idIllustration)
                 .orElseThrow(() -> new NotFoundException("Illustration not found with id: " + idIllustration));
@@ -57,6 +63,11 @@ public class IllustrationBusiness {
         Path path = Paths.get(illustrationEntity.getPath());
         path = Paths.get(UPLOAD_DIR).resolve(path);
 
-        return FilesGestion.loadFileAsResource(path);
+        try {
+            return FilesGestion.loadFileAsResource(path);
+        } catch (IOException e) {
+            throw new InternalErrorException("Could not load file");
+        }
+
     }
 }

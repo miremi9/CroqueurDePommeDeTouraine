@@ -1,6 +1,7 @@
 package fr.croqueurdepommetouraine.demo.tools;
 
 
+import fr.croqueurdepommetouraine.demo.erreurs.InternalErrorException;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 
@@ -13,7 +14,7 @@ import java.nio.file.StandardCopyOption;
 public class FilesGestion {
     public static void saveFile(InputStream inputStream, Path destinationPath) {
         if (destinationPath == null) {
-            throw new IllegalArgumentException("Invalid destination path");
+            throw new InternalErrorException("Invalid destination path");
         }
 
 
@@ -28,7 +29,7 @@ public class FilesGestion {
             Files.copy(inputStream, destinationPath, StandardCopyOption.REPLACE_EXISTING);
 
         } catch (IOException e) {
-            throw new RuntimeException("Failed to save file to: " + destinationPath, e);
+            throw new InternalErrorException("Failed to save file to: " + destinationPath);
         }
     }
 

@@ -3,6 +3,8 @@ package fr.croqueurdepommetouraine.demo.business;
 import fr.croqueurdepommetouraine.demo.DAO.UserDAO;
 import fr.croqueurdepommetouraine.demo.Entity.RoleEntity;
 import fr.croqueurdepommetouraine.demo.Entity.UserEntity;
+import fr.croqueurdepommetouraine.demo.erreurs.NotFoundException;
+import fr.croqueurdepommetouraine.demo.erreurs.RequeteIncorrect;
 import fr.croqueurdepommetouraine.demo.repository.RoleRepository;
 import fr.croqueurdepommetouraine.demo.repository.UserRepository;
 import fr.croqueurdepommetouraine.demo.security.ROLES;
@@ -62,7 +64,7 @@ public class UserBusiness implements UserDetailsService {
 
     private UserEntity saveUser(UserEntity userEntity) {
         if (userRepository.findByNom(userEntity.getNom()) != null) {
-            throw new IllegalArgumentException("User already exists with username: " + userEntity.getNom());
+            throw new RequeteIncorrect("User already exists with username: " + userEntity.getNom());
         } else {
             if (Objects.equals(userEntity.getNom(), "admin")) {
                 RoleEntity adminRole = roleRepository.findByNomRole(ROLES.ROLE_ADMIN)
@@ -85,7 +87,7 @@ public class UserBusiness implements UserDetailsService {
         newUser.setMotDePasse(motDePasse);
         //check email format
         if (email == null || !email.matches("^[A-Za-z0-9+._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$")) {
-            throw new IllegalArgumentException("Invalid email format");
+            throw new RequeteIncorrect("Invalid email format");
         }
         newUser.setEmail(email);
         return saveUser(newUser);
@@ -93,23 +95,23 @@ public class UserBusiness implements UserDetailsService {
 
     public UserDAO updateUser(UUID id, UserDAO userDAO, UserDetails userConnect) {
         UserEntity existingUser = userRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("User not found with id: " + id));
+                .orElseThrow(() -> new NotFoundException("User not found with id: " + id));
 
         //Si tentative de destituer admin
         if (existingUser.getRoles().stream().anyMatch(r -> Objects.equals(r.getNomRole(), ROLES.ROLE_ADMIN)) &&
                 userDAO.getRoles().stream().noneMatch(r -> Objects.equals(r, ROLES.ROLE_ADMIN))) {
-            throw new IllegalArgumentException("Impossible de destituer un admin");
+            throw new RequeteIncorrect("Impossible de destituer un admin");
         }
         UserEntity updatedUser = userMapper.toEntity(userDAO);
         if (updatedUser.getNom() == null) {
-            throw new IllegalArgumentException("Username cannot be null");
+            throw new RequeteIncorrect("Username cannot be null");
         }
         existingUser.setNom(updatedUser.getNom());
         existingUser.setRoles(updatedUser.getRoles());
 
         Set<RoleEntity> attachedRoles = updatedUser.getRoles().stream()
                 .map(role -> roleRepository.findByNomRole(role.getNomRole())
-                        .orElseThrow(() -> new IllegalArgumentException("Role not found: " + role.getNomRole())))
+                        .orElseThrow(() -> new NotFoundException("Role not found: " + role.getNomRole())))
                 .collect(Collectors.toSet());
 
 
@@ -140,12 +142,12 @@ public class UserBusiness implements UserDetailsService {
     public void resetPassword(String token, String newPassword) {
         UserEntity user = userRepository.findByResetPasswordToken(token);
         if (user == null) {
-            throw new IllegalArgumentException("Invalid or expired reset password token");
+            throw new RequeteIncorrect("Invalid or expired reset password token");
         }
 
         // Vérifier si le token est expiré
         if (user.getResetPasswordTokenExpiry() == null || LocalDateTime.now().isAfter(user.getResetPasswordTokenExpiry())) {
-            throw new IllegalArgumentException("Reset password token has expired");
+            throw new RequeteIncorrect("Reset password token has expired");
         }
 
         // Définir le nouveau mot de passe

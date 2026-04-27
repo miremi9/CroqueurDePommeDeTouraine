@@ -1,6 +1,7 @@
 package fr.croqueurdepommetouraine.demo.business;
 
 import fr.croqueurdepommetouraine.demo.Entity.UserEntity;
+import fr.croqueurdepommetouraine.demo.erreurs.RequeteIncorrect;
 import fr.croqueurdepommetouraine.demo.security.JwtUtils;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
@@ -22,7 +23,7 @@ public class AuthentificationBusiness {
                     new UsernamePasswordAuthenticationToken(nom, motDePasse));
         } catch (Exception ex) {
             System.out.println(ex.getMessage());
-            throw new RuntimeException("Nom d'utilisateur ou mot de passe incorrect");
+            throw new RequeteIncorrect("Nom d'utilisateur ou mot de passe incorrect");
         }
         final UserEntity user = userDetailsService.getUserByNom(nom);
         final String jwt = jwtUtil.generateToken(user);
