@@ -2,6 +2,7 @@
   display: flex;
   gap: 8px;
   padding: 8px 14px;
+  align-items: center;
 }
 
 .menu__btn {
@@ -15,6 +16,24 @@
 
 .menu__btn:hover {
   background: color-mix(in srgb, var(--primary-color, #052b18) 80%, #ffffff);
+}
+
+.menu__icon-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid color-mix(in srgb, var(--primary-color, #052b18) 70%, #ffffff);
+  background: transparent;
+  color: var(--primary-color, #052b18);
+  font-size: 18px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.menu__icon-btn:hover {
+  background: color-mix(in srgb, var(--primary-color, #052b18) 15%, #ffffff);
 }
 
 .menu__error-inline {

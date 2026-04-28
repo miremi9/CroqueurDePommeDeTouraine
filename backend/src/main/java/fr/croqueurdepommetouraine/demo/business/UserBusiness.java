@@ -3,6 +3,7 @@ package fr.croqueurdepommetouraine.demo.business;
 import fr.croqueurdepommetouraine.demo.DAO.UserDAO;
 import fr.croqueurdepommetouraine.demo.Entity.RoleEntity;
 import fr.croqueurdepommetouraine.demo.Entity.UserEntity;
+import fr.croqueurdepommetouraine.demo.erreurs.AccesInterditException;
 import fr.croqueurdepommetouraine.demo.erreurs.NotFoundException;
 import fr.croqueurdepommetouraine.demo.erreurs.RequeteIncorrect;
 import fr.croqueurdepommetouraine.demo.repository.RoleRepository;
@@ -94,30 +95,55 @@ public class UserBusiness implements UserDetailsService {
     }
 
     public UserDAO updateUser(UUID id, UserDAO userDAO, UserDetails userConnect) {
+
+        // 1. Charger utilisateur cible
         UserEntity existingUser = userRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("User not found with id: " + id));
 
-        //Si tentative de destituer admin
-        if (existingUser.getRoles().stream().anyMatch(r -> Objects.equals(r.getNomRole(), ROLES.ROLE_ADMIN)) &&
-                userDAO.getRoles().stream().noneMatch(r -> Objects.equals(r, ROLES.ROLE_ADMIN))) {
-            throw new RequeteIncorrect("Impossible de destituer un admin");
+        // 2. Charger utilisateur connecté
+        UserEntity currentUser = userRepository.findByNom(userConnect.getUsername());
+
+        // 3. Vérifier droits
+        boolean isSelf = existingUser.getNom().equals(userConnect.getUsername());
+        if (!isAdmin(currentUser) && !isSelf) {
+            throw new AccesInterditException("Vous n'avez pas les droits");
         }
-        UserEntity updatedUser = userMapper.toEntity(userDAO);
-        if (updatedUser.getNom() == null) {
+
+        // 4. Validation
+        if (userDAO.getNom() == null) {
             throw new RequeteIncorrect("Username cannot be null");
         }
-        existingUser.setNom(updatedUser.getNom());
-        existingUser.setRoles(updatedUser.getRoles());
 
-        Set<RoleEntity> attachedRoles = updatedUser.getRoles().stream()
-                .map(role -> roleRepository.findByNomRole(role.getNomRole())
-                        .orElseThrow(() -> new NotFoundException("Role not found: " + role.getNomRole())))
-                .collect(Collectors.toSet());
+        // 5. Empêcher destitution admin
+        boolean isTargetAdmin = existingUser.getRoles().stream()
+                .anyMatch(r -> r.getNomRole() == ROLES.ROLE_ADMIN);
 
+        boolean willBeAdmin = userDAO.getRoles() != null &&
+                userDAO.getRoles().stream()
+                        .anyMatch(r -> r == ROLES.ROLE_ADMIN);
 
-        existingUser.setRoles(attachedRoles);
-        updatedUser = userRepository.save(existingUser);
-        return userMapper.toDAO(updatedUser);
+        if (isTargetAdmin && !willBeAdmin) {
+            throw new RequeteIncorrect("Impossible de destituer un admin");
+        }
+
+        // 6. Mise à jour des champs simples
+        existingUser.setNom(userDAO.getNom());
+        existingUser.setEmail(userDAO.getEmail());
+
+        // 7. Mise à jour des rôles
+        if (userDAO.getRoles() != null) {
+            Set<RoleEntity> attachedRoles = userDAO.getRoles().stream()
+                    .map(role -> roleRepository.findByNomRole(role)
+                            .orElseThrow(() -> new NotFoundException("Role not found: " + role)))
+                    .collect(Collectors.toSet());
+
+            existingUser.setRoles(attachedRoles);
+        }
+
+        // 8. Sauvegarde
+        UserEntity saved = userRepository.save(existingUser);
+
+        return userMapper.toDAO(saved);
     }
 
     public void forgotPassword(String email) {
@@ -161,5 +187,9 @@ public class UserBusiness implements UserDetailsService {
         userRepository.save(user);
     }
 
+    private boolean isAdmin(UserEntity user) {
+        return user.getRoles().stream()
+                .anyMatch(role -> Objects.equals(role.getNomRole(), ROLES.ROLE_ADMIN));
+    }
 
 }

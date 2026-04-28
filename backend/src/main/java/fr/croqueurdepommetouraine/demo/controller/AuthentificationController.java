@@ -3,14 +3,13 @@ package fr.croqueurdepommetouraine.demo.controller;
 import fr.croqueurdepommetouraine.demo.business.AuthentificationBusiness;
 import fr.croqueurdepommetouraine.demo.business.UserBusiness;
 import fr.croqueurdepommetouraine.demo.security.AuthRequest;
+import fr.croqueurdepommetouraine.demo.tools.AuthResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.Map;
 
 @RequiredArgsConstructor
 @RestController
@@ -23,9 +22,9 @@ public class AuthentificationController {
 
     // Endpoint pour l'authentification d'un utilisateur
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody AuthRequest request) {
-        String token = authentificationBusiness.login(request.getNom(), request.getMotDePasse());
-        return ResponseEntity.ok(Map.of("token", token));
+    public ResponseEntity<AuthResponse> login(@RequestBody AuthRequest request) {
+        AuthResponse authResponse = authentificationBusiness.login(request.getNom(), request.getMotDePasse());
+        return ResponseEntity.ok(authResponse);
 
     }
 

@@ -16,11 +16,13 @@ export class AuthWidgetComponent implements OnInit {
 
   isAuthenticated = false;
   showModal = false;
-  modalMode: 'login' | 'register' | 'reset' = 'login';
+  modalMode: 'login' | 'register' | 'reset' | 'edit-profile' = 'login';
   username = '';
   password = '';
   resetToken = '';
   resetNewPassword = '';
+  profileName = '';
+  profileEmail = '';
   errorMessage: string | null = null;
   lastAuthError: string | null = null;
 
@@ -70,6 +72,17 @@ export class AuthWidgetComponent implements OnInit {
     this.cdr.detectChanges();
   }
 
+  openEditProfile() {
+    const user = this.authService.getUser();
+    this.modalMode = 'edit-profile';
+    this.errorMessage = null;
+    this.lastAuthError = null;
+    this.profileName = user?.nom ?? this.username ?? '';
+    this.profileEmail = user?.email ?? '';
+    this.showModal = true;
+    this.cdr.detectChanges();
+  }
+
   closeModal() {
     this.showModal = false;
     this.cdr.detectChanges();
@@ -100,6 +113,8 @@ export class AuthWidgetComponent implements OnInit {
           this.cdr.detectChanges();
         }
       });
+    } else if (this.modalMode === 'edit-profile') {
+      this.onEditProfileSubmit();
     } else if (this.modalMode === 'reset') {
       this.onResetSubmit();
     } else {
@@ -165,6 +180,30 @@ export class AuthWidgetComponent implements OnInit {
       error: (err) => {
         const apiMsg = err?.error?.message || err?.error || err?.message;
         this.errorMessage = apiMsg ? String(apiMsg) : 'Échec de la réinitialisation du mot de passe.';
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  private onEditProfileSubmit(): void {
+    const nom = this.profileName.trim();
+    const emailValue = this.profileEmail.trim();
+    const email = emailValue ? emailValue : null;
+
+    if (!nom) {
+      this.errorMessage = 'Le nom est obligatoire.';
+      return;
+    }
+
+    this.authService.updateProfile({ nom, email }).subscribe({
+      next: () => {
+        this.username = nom;
+        this.showModal = false;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        const apiMsg = err?.error?.message || err?.error || err?.message;
+        this.errorMessage = apiMsg ? String(apiMsg) : 'Échec de la mise à jour du profil.';
         this.cdr.detectChanges();
       }
     });

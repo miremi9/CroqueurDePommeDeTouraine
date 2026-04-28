@@ -5,6 +5,9 @@
     <button class="menu__btn" (click)="openRegister()">S'inscrire</button>
   } @else {
     <p> Bienvenue {{ username }}</p>
+    <button class="menu__icon-btn" (click)="openEditProfile()" aria-label="Editer le profil" title="Editer le profil">
+      ⚙
+    </button>
     <button class="menu__btn" (click)="logout()">Se déconnecter</button>
   }
 </div>
@@ -13,10 +16,19 @@
   <div class="modal__backdrop" (click)="closeModal()"></div>
   <div class="modal__window" role="dialog" aria-modal="true">
     <h3 class="modal__title">
-      {{ modalMode === 'login' ? 'Connexion' : (modalMode === 'register' ? 'Inscription' : 'Réinitialisation du mot de passe') }}
+      {{ modalMode === 'login' ? 'Connexion' : (modalMode === 'register' ? 'Inscription' : (modalMode === 'edit-profile' ? 'Modifier le profil' : 'Réinitialisation du mot de passe')) }}
     </h3>
     <form (ngSubmit)="onSubmit()" class="modal__form">
-      @if (modalMode !== 'reset') {
+      @if (modalMode === 'edit-profile') {
+        <label class="modal__label">
+          <span>Nom d'utilisateur</span>
+          <input class="modal__input" type="text" [(ngModel)]="profileName" name="profileName" required />
+        </label>
+        <label class="modal__label">
+          <span>Email</span>
+          <input class="modal__input" type="email" [(ngModel)]="profileEmail" name="profileEmail" />
+        </label>
+      } @else if (modalMode !== 'reset') {
         <label class="modal__label">
           <span>Nom d'utilisateur</span>
           <input class="modal__input" type="text" [(ngModel)]="username" name="username" required />
@@ -41,7 +53,7 @@
           <button type="button" class="modal__btn" (click)="onForgotPassword()">Mot de passe oublié ?</button>
         }
         <button type="submit" class="modal__btn modal__btn--primary">
-          {{ modalMode === 'login' ? 'Se connecter' : (modalMode === 'register' ? "S'inscrire" : 'Réinitialiser') }}
+          {{ modalMode === 'login' ? 'Se connecter' : (modalMode === 'register' ? "S'inscrire" : (modalMode === 'edit-profile' ? 'Enregistrer' : 'Réinitialiser')) }}
         </button>
       </div>
       @if (errorMessage) {

@@ -26,6 +26,9 @@ export class Article implements OnChanges, OnDestroy {
   
   private imageUrls: Map<string, string> = new Map();
   private illustrationMetadata: Map<string, { fileName: string; isImage: boolean; mimeType?: string }> = new Map();
+  private renderedContent: SafeHtml = this.sanitizer.bypassSecurityTrustHtml('');
+  private imageIds: string[] = [];
+  private fileIds: string[] = [];
 
   @Input() article: ArticleResponse = {
     title: '',
@@ -67,6 +70,8 @@ export class Article implements OnChanges, OnDestroy {
         }
       }
     });
+
+    this.refreshDerivedContent();
   }
 
   loadIllustrationMetadata(id: string): void {
@@ -77,6 +82,7 @@ export class Article implements OnChanges, OnDestroy {
         const isImage = this.isImageFile(fileName, illustration.mimeType);
         const mimeType = illustration.mimeType || undefined;
         this.illustrationMetadata.set(id, { fileName, isImage, mimeType });
+        this.refreshIllustrationIds();
         if (isImage && !this.imageUrls.has(id)) {
           this.loadImage(id);
         }
@@ -86,6 +92,7 @@ export class Article implements OnChanges, OnDestroy {
         console.error('Erreur lors du chargement des métadonnées:', error);
         // Par défaut, considérer comme image si on ne peut pas charger les métadonnées
         this.illustrationMetadata.set(id, { fileName: '', isImage: true });
+        this.refreshIllustrationIds();
         this.cdr.detectChanges();
       }
     });
@@ -176,11 +183,11 @@ export class Article implements OnChanges, OnDestroy {
   }
 
   getImageIds(): string[] {
-    return (this.article.idIllustrationDAOS || []).filter(id => this.isImage(id));
+    return this.imageIds;
   }
 
   getFileIds(): string[] {
-    return (this.article.idIllustrationDAOS || []).filter(id => !this.isImage(id));
+    return this.fileIds;
   }
 
   isEvenIndex(): boolean {
@@ -188,12 +195,7 @@ export class Article implements OnChanges, OnDestroy {
   }
 
   getRenderedContent(): SafeHtml {
-    if (!this.article?.content) {
-      return this.sanitizer.bypassSecurityTrustHtml('');
-    }
-
-    const contentWithSafeIframes = this.sanitizeContentWithSafeIframes(this.article.content);
-    return this.sanitizer.bypassSecurityTrustHtml(contentWithSafeIframes);
+    return this.renderedContent;
   }
 
   private sanitizeContentWithSafeIframes(rawContent: string): string {
@@ -276,12 +278,26 @@ export class Article implements OnChanges, OnDestroy {
       .replace(/>/g, '&gt;');
   }
 
+  private refreshDerivedContent(): void {
+    const rawContent = this.article?.content || '';
+    const contentWithSafeIframes = this.sanitizeContentWithSafeIframes(rawContent);
+    this.renderedContent = this.sanitizer.bypassSecurityTrustHtml(contentWithSafeIframes);
+    this.refreshIllustrationIds();
+  }
+
+  private refreshIllustrationIds(): void {
+    const ids = this.article?.idIllustrationDAOS || [];
+    this.imageIds = ids.filter(id => this.isImage(id));
+    this.fileIds = ids.filter(id => !this.isImage(id));
+  }
+
   removeIllustration(id: string): void {
     // Supprime immédiatement côté serveur puis met à jour l'article
     this.illustrationService.deleteIllustration(id).subscribe({
       next: () => {
         const updatedIds = (this.article.idIllustrationDAOS || []).filter(x => x !== id);
         this.article = { ...this.article, idIllustrationDAOS: updatedIds };
+        this.refreshDerivedContent();
         // Nettoyer caches
         const url = this.imageUrls.get(id);
         if (url) {
@@ -289,6 +305,7 @@ export class Article implements OnChanges, OnDestroy {
           this.imageUrls.delete(id);
         }
         this.illustrationMetadata.delete(id);
+        this.refreshIllustrationIds();
         this.cdr.detectChanges();
         // Persister la mise à jour de l'article
         if (this.article.idArticle) {

@@ -14,7 +14,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SiteBodyBusiness {
 
-    private SiteBodyRepository siteBodyRepository;
+    private final SiteBodyRepository siteBodyRepository;
 
     /**
      * Retourne le contenu du site (le premier en base).

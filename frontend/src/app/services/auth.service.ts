@@ -3,8 +3,16 @@ import { HttpClient } from '@angular/common/http';
 import { Observable, BehaviorSubject, tap, distinctUntilChanged, startWith, map } from 'rxjs';
 import { environment } from '../../environments/environment';
 
+interface AuthUser {
+  idUser: string;
+  nom: string;
+  roles: string[];
+  email: string | null;
+}
+
 interface AuthResponse {
   token: string;
+  user?: AuthUser;
 }
 
 interface Credentials {
@@ -21,9 +29,16 @@ interface ResetPasswordPayload {
   newPassword: string;
 }
 
+interface UpdateProfilePayload {
+  nom: string;
+  email: string | null;
+}
+
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   getUsername(): string | null {
+    const user = this.getUser();
+    if (user?.nom) return user.nom;
     const token = this.getToken();
     if (!token) return null;
     try {
@@ -35,6 +50,7 @@ export class AuthService {
   }
   private readonly apiUrl = `${environment.apiUrl}/auth`;
   private readonly tokenKey = 'auth_token';
+  private readonly userKey = 'auth_user';
   private http = inject(HttpClient);
   
 
@@ -50,7 +66,12 @@ export class AuthService {
   login(credentials: Credentials): Observable<AuthResponse> {
     return this.http
       .post<AuthResponse>(`${this.apiUrl}/login`, credentials)
-      .pipe(tap(res => this.setToken(res.token)));
+      .pipe(
+        tap(res => {
+          this.setToken(res.token);
+          this.setUser(res.user);
+        })
+      );
   }
 
   forgotPassword(payload: ForgotPasswordPayload): Observable<{ message: string }> {
@@ -61,8 +82,26 @@ export class AuthService {
     return this.http.post<{ message: string }>(`${environment.apiUrl}/users/reset-password`, payload);
   }
 
+  updateProfile(payload: UpdateProfilePayload): Observable<AuthUser> {
+    const currentUser = this.getUser();
+    if (!currentUser?.idUser) {
+      throw new Error('Utilisateur non connecté');
+    }
+
+    const body: AuthUser = {
+      ...currentUser,
+      nom: payload.nom,
+      email: payload.email
+    };
+
+    return this.http
+      .put<AuthUser>(`${environment.apiUrl}/users/${currentUser.idUser}`, body)
+      .pipe(tap(user => this.setUser(user)));
+  }
+
   logout(): void {
     localStorage.removeItem(this.tokenKey);
+    localStorage.removeItem(this.userKey);
     this.authenticatedSubject.next(false);
   }
 
@@ -70,11 +109,26 @@ export class AuthService {
     return localStorage.getItem(this.tokenKey);
   }
 
+  getUser(): AuthUser | null {
+    const raw = localStorage.getItem(this.userKey);
+    if (!raw) return null;
+    try {
+      return JSON.parse(raw) as AuthUser;
+    } catch {
+      return null;
+    }
+  }
+
   private setToken(token: string | undefined) {
     if (token) {
       localStorage.setItem(this.tokenKey, token);
       this.authenticatedSubject.next(true);
     }
+  }
+
+  private setUser(user: AuthUser | undefined) {
+    if (!user) return;
+    localStorage.setItem(this.userKey, JSON.stringify(user));
   }
 
   private hasToken(): boolean {
@@ -86,6 +140,8 @@ export class AuthService {
   }
 
   getRoles(): string[] {
+    const user = this.getUser();
+    if (user && Array.isArray(user.roles)) return user.roles;
     const token = this.getToken();
     if (!token) return [];
     try {
@@ -97,6 +153,8 @@ export class AuthService {
   }
 
   getId(): string | null {
+    const user = this.getUser();
+    if (typeof user?.idUser === 'string') return user.idUser;
     const token = this.getToken();
     if (!token) return null;
     try {
