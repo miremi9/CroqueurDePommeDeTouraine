@@ -54,6 +54,7 @@ public class SecurityConfig {
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> {
 
+
                     for (SecurityRule rule : SecurityRules.rules()) {
                         if (rule.permitAll()) {
                             if (rule.method() != null) {

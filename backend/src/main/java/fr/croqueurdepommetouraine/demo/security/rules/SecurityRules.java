@@ -21,11 +21,12 @@ public class SecurityRules {
                 SecurityRule.permitAll(HttpMethod.GET, "/illustrations/**"),
                 SecurityRule.restricted(HttpMethod.POST, "/illustrations", ROLES.ROLE_ADMIN, ROLES.ROLE_MODERATOR, ROLES.ROLE_USER),
 
+
+                SecurityRule.permitAll(HttpMethod.POST, "/users/forgot-password"),
+                SecurityRule.permitAll(HttpMethod.POST, "/users/reset-password"),
                 SecurityRule.restricted(HttpMethod.GET, "/users", ROLES.ROLE_ADMIN),
                 //Doit etre authentifié pour modifier son propre compte, ou être admin pour modifier n'importe quel compte
                 SecurityRule.restricted(HttpMethod.PUT, "/users/**"),
-                SecurityRule.permitAll(HttpMethod.POST, "/users/forgot-password"),
-                SecurityRule.permitAll(HttpMethod.POST, "/users/reset-password"),
 
                 SecurityRule.permitAll(HttpMethod.GET, "/sections"),
                 SecurityRule.restricted(HttpMethod.POST, "/sections", ROLES.ROLE_ADMIN),

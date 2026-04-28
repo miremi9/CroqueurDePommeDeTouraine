@@ -55,6 +55,17 @@ export const baseRoutes: Routes = [
     component: ResetPasswordComponent,
     data: { title: 'Reset Password' }
   },
+  // Compat routes: avoid router errors when legacy/back-end URLs are opened in the SPA.
+  {
+    path: 'users/reset-password',
+    component: ResetPasswordComponent,
+    data: { title: 'Reset Password' }
+  },
+  {
+    path: 'users/forgot-password',
+    redirectTo: '/accueil',
+    pathMatch: 'full'
+  },
 ];
 
 /**
