@@ -1,6 +1,7 @@
 package fr.croqueurdepommetouraine.demo.business;
 
 import fr.croqueurdepommetouraine.demo.DAO.SiteBodyDAO;
+import fr.croqueurdepommetouraine.demo.erreurs.InternalErrorException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -28,8 +29,7 @@ public class EmailService {
                     "Pour réinitialiser votre mot de passe, utilisez ce token dans l'application.\n\n" +
                     "Si vous n'avez pas demandé cette réinitialisation, ignorez cet email.\n\n" +
                     "Cordialement");
-        }
-        else {
+        } else {
             message.setText("Bonjour,\n\n" +
                     "Vous avez demandé la réinitialisation de votre mot de passe.\n\n" +
                     "Voici votre lien de réinitialisation : " + UrlSite + "/reset-password?token=" + resetToken + "\n\n" +
@@ -40,7 +40,10 @@ public class EmailService {
         message.setTo(toEmail);
         message.setSubject("Réinitialisation de votre mot de passe - " + NomSite);
 
-
-        mailSender.send(message);
+        try {
+            mailSender.send(message);
+        } catch (Exception e) {
+            throw new InternalErrorException("Failed to send password reset email: " + e.getMessage());
+        }
     }
 }
