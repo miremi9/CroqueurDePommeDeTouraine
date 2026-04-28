@@ -29,19 +29,10 @@ services:
       SPRING_DATASOURCE_USERNAME: ${MYSQL_USER}
       SPRING_DATASOURCE_PASSWORD: ${MYSQL_PASSWORD}
       APP_SECRET_KEY: ${APP_SECRET_KEY}
-    depends_on:
-      db:
-        condition: service_healthy
-    restart: on-failure
-
-  # -------------------- FRONTEND --------------------
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    depends_on:
-      - backend
-    restart: always
+      SPRING_MAIL_HOST: ${SPRING_MAIL_HOST}
+      SPRING_MAIL_PORT: ${SPRING_MAIL_PORT}
+      SPRING_MAIL_USERNAME: ${SPRING_MAIL_USERNAME}
+      SPRING_MAIL_PASSWORD: ${SPRING_MAIL_PASSWORD}
 
   # -------------------- NGINX (PROXY + HTTPS) --------------------
   nginx:
