@@ -147,6 +147,9 @@ public class UserBusiness implements UserDetailsService {
     }
 
     public void forgotPassword(String email) {
+        if (email == null || email.isEmpty()) {
+            throw new RequeteIncorrect("Email is required");
+        }
         UserEntity user = userRepository.findByEmail(email);
         if (user == null) {
             throw new UsernameNotFoundException("User not found with email: " + email);
@@ -166,6 +169,9 @@ public class UserBusiness implements UserDetailsService {
     }
 
     public void resetPassword(String token, String newPassword) {
+        if (token == null || token.isEmpty() || newPassword == null || newPassword.isEmpty()) {
+            throw new IllegalArgumentException("Token and newPassword are required");
+        }
         UserEntity user = userRepository.findByResetPasswordToken(token);
         if (user == null) {
             throw new RequeteIncorrect("Invalid or expired reset password token");
