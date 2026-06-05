@@ -4,15 +4,16 @@
 }
 
 .footer-wrapper {
-  background-color: var(--secondary-color, #052b18);
-  color: var(--text-on-secondary, #ffffff);
-  padding: 24px 16px;
+  background-color: var(--card-background, #ffffff);
+  color: var(--text-muted, #666666);
+  padding: var(--space-5) var(--space-4);
   display: flex;
   justify-content: center;
+  border-top: 3px solid var(--primary-color, #094609);
 }
 
 .credits {
-  max-width: 960px;
+  max-width: var(--content-max-width, 960px);
   text-align: center;
   font-size: 0.8rem;
   line-height: 1.6;

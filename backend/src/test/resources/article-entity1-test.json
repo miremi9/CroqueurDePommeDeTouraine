@@ -1,7 +1,15 @@
 [
   {
     "idArticle": "11111111-1111-1111-1111-111111111111",
-    "section": { "idSection": 1, "nom": "Section 1", "path": "/section1", "parent": null, "supprimed": false, "rolesCanRead": [], "rolesCanWrite": [] },
+    "section": {
+      "idSection": 1,
+      "nom": "Section 1",
+      "path": "/section1",
+      "parent": null,
+      "supprimed": false,
+      "rolesCanRead": [],
+      "rolesCanWrite": []
+    },
     "title": "Titre test",
     "content": "Contenu de test",
     "author": {
@@ -14,12 +22,20 @@
     "dateCreation": "2024-04-24T10:00:00.000+00:00",
     "changed": false,
     "supprimed": false,
-    "pathsImages": [ { "idIllustration": "33333333-3333-3333-3333-333333333333" } ],
+    "pathsImages": [],
     "supprime": false
   },
   {
     "idArticle": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
-    "section": { "idSection": 2, "nom": "Section 2", "path": "/section2", "parent": null, "supprimed": false, "rolesCanRead": [], "rolesCanWrite": [] },
+    "section": {
+      "idSection": 2,
+      "nom": "Section 2",
+      "path": "/section2",
+      "parent": null,
+      "supprimed": false,
+      "rolesCanRead": [],
+      "rolesCanWrite": []
+    },
     "title": "Titre test 2",
     "content": "Contenu de test 2",
     "author": {
@@ -32,7 +48,11 @@
     "dateCreation": "2024-04-25T10:00:00.000+00:00",
     "changed": true,
     "supprimed": false,
-    "pathsImages": [ { "idIllustration": "cccccccc-cccc-cccc-cccc-cccccccccccc" } ],
+    "pathsImages": [
+      {
+        "idIllustration": "cccccccc-cccc-cccc-cccc-cccccccccccc"
+      }
+    ],
     "supprime": false
   }
 ]

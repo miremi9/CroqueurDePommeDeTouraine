@@ -29,11 +29,15 @@ export class AdminEditSiteComponent implements OnInit, OnDestroy {
   successMessage: string | null = null;
   errorMessage: string | null = null;
   logoPreview: string[] = [];
+  backgroundImagePreview: string | null = null;
 
   private currentSiteBody: SiteBodyResponse | null = null;
   private selectedLogoBase64: string | null = null;
   private shouldRemoveLogo = false;
+  private selectedBackgroundImageBase64: string | null = null;
+  private shouldRemoveBackgroundImage = false;
   private previewObjectUrl: string | null = null;
+  private backgroundPreviewObjectUrl: string | null = null;
   private readonly subscriptions = new Subscription();
 
   ngOnInit(): void {
@@ -55,10 +59,15 @@ export class AdminEditSiteComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
     this.revokePreviewObjectUrl();
+    this.revokeBackgroundPreviewObjectUrl();
   }
 
   get hasLogo(): boolean {
     return this.logoPreview.length > 0 || this.selectedLogoBase64 !== null;
+  }
+
+  get hasBackgroundImage(): boolean {
+    return this.backgroundImagePreview !== null || this.selectedBackgroundImageBase64 !== null;
   }
 
   onLogoSelected(event: Event): void {
@@ -98,6 +107,43 @@ export class AdminEditSiteComponent implements OnInit, OnDestroy {
     this.revokePreviewObjectUrl();
   }
 
+  onBackgroundImageSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
+    if (!file) {
+      return;
+    }
+
+    this.shouldRemoveBackgroundImage = false;
+    this.revokeBackgroundPreviewObjectUrl();
+    this.backgroundPreviewObjectUrl = URL.createObjectURL(file);
+    this.backgroundImagePreview = this.backgroundPreviewObjectUrl;
+
+    // Convertir le fichier en base64
+    const reader = new FileReader();
+    reader.onload = () => {
+      const result = reader.result;
+      if (typeof result === 'string') {
+        const commaIndex = result.indexOf(',');
+        this.selectedBackgroundImageBase64 = commaIndex >= 0 ? result.substring(commaIndex + 1) : result;
+      }
+    };
+    reader.onerror = () => {
+      this.errorMessage = 'Erreur lors de la lecture du fichier.';
+      this.selectedBackgroundImageBase64 = null;
+      this.backgroundImagePreview = null;
+      this.revokeBackgroundPreviewObjectUrl();
+    };
+    reader.readAsDataURL(file);
+  }
+
+  onRemoveBackgroundImage(): void {
+    this.shouldRemoveBackgroundImage = true;
+    this.selectedBackgroundImageBase64 = null;
+    this.backgroundImagePreview = null;
+    this.revokeBackgroundPreviewObjectUrl();
+  }
+
   submit(): void {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
@@ -115,6 +161,15 @@ export class AdminEditSiteComponent implements OnInit, OnDestroy {
       logoValue = this.currentSiteBody.logo;
     }
 
+    let backgroundImageValue = '';
+    if (this.shouldRemoveBackgroundImage) {
+      backgroundImageValue = '';
+    } else if (this.selectedBackgroundImageBase64) {
+      backgroundImageValue = this.selectedBackgroundImageBase64;
+    } else if (this.currentSiteBody?.backgroundImage) {
+      backgroundImageValue = this.currentSiteBody.backgroundImage;
+    }
+
     const payload: SiteBodyResponse = {
       titre,
       url,
@@ -122,6 +177,7 @@ export class AdminEditSiteComponent implements OnInit, OnDestroy {
       couleurPrincipale,
       couleurSecondaire,
       logo: logoValue,
+      backgroundImage: backgroundImageValue,
     };
 
     this.saving = true;
@@ -137,7 +193,10 @@ export class AdminEditSiteComponent implements OnInit, OnDestroy {
           this.successMessage = 'Paramètres enregistrés avec succès.';
           this.shouldRemoveLogo = false;
           this.selectedLogoBase64 = null;
+          this.shouldRemoveBackgroundImage = false;
+          this.selectedBackgroundImageBase64 = null;
           this.revokePreviewObjectUrl();
+          this.revokeBackgroundPreviewObjectUrl();
         },
         error: (error) => {
           console.error(error);
@@ -150,7 +209,10 @@ export class AdminEditSiteComponent implements OnInit, OnDestroy {
     this.currentSiteBody = siteBody;
     this.shouldRemoveLogo = false;
     this.selectedLogoBase64 = null;
+    this.shouldRemoveBackgroundImage = false;
+    this.selectedBackgroundImageBase64 = null;
     this.revokePreviewObjectUrl();
+    this.revokeBackgroundPreviewObjectUrl();
     this.form.patchValue({
       titre: siteBody.titre ?? '',
       url: siteBody.url ?? '',
@@ -161,12 +223,22 @@ export class AdminEditSiteComponent implements OnInit, OnDestroy {
 
     const logoSrc = this.siteBodyService.resolveLogoSource(siteBody.logo);
     this.logoPreview = logoSrc ? [logoSrc] : [];
+
+    const backgroundSrc = this.siteBodyService.resolveBackgroundImageSource(siteBody.backgroundImage);
+    this.backgroundImagePreview = backgroundSrc ?? null;
   }
 
   private revokePreviewObjectUrl(): void {
     if (this.previewObjectUrl) {
       URL.revokeObjectURL(this.previewObjectUrl);
       this.previewObjectUrl = null;
+    }
+  }
+
+  private revokeBackgroundPreviewObjectUrl(): void {
+    if (this.backgroundPreviewObjectUrl) {
+      URL.revokeObjectURL(this.backgroundPreviewObjectUrl);
+      this.backgroundPreviewObjectUrl = null;
     }
   }
 }

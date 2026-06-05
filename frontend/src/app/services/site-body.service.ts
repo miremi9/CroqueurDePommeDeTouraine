@@ -67,6 +67,20 @@ export class SiteBodyService {
     return `data:image/png;base64,${value}`;
   }
 
+  resolveBackgroundImageSource(backgroundData: string | undefined | null): string | null {
+    if (!backgroundData) {
+      return null;
+    }
+    const value = backgroundData.trim();
+    if (!value) {
+      return null;
+    }
+    if (value.startsWith('http') || value.startsWith('data:')) {
+      return value;
+    }
+    return `data:image/png;base64,${value}`;
+  }
+
   private setSiteBody(siteBody: SiteBodyResponse): void {
     this.loadedOnce = true;
     this.siteBodySubject.next(siteBody);
@@ -78,11 +92,26 @@ export class SiteBodyService {
       return;
     }
     const root = document.documentElement;
+    const body = document.body;
+
     if (siteBody.couleurPrincipale) {
       root.style.setProperty('--primary-color', siteBody.couleurPrincipale);
     }
     if (siteBody.couleurSecondaire) {
       root.style.setProperty('--secondary-color', siteBody.couleurSecondaire);
+    }
+
+    // Appliquer l'image de fond ou le gris par défaut
+    const backgroundImageSource = this.resolveBackgroundImageSource(siteBody.backgroundImage);
+    if (backgroundImageSource) {
+      body.style.backgroundImage = `url('${backgroundImageSource}')`;
+      body.style.backgroundSize = 'cover';
+      body.style.backgroundAttachment = 'fixed';
+      body.style.backgroundPosition = 'center center';
+      body.style.backgroundRepeat = 'no-repeat';
+    } else {
+      body.style.backgroundImage = 'none';
+      body.style.backgroundColor = '#cccccc';
     }
   }
 
@@ -94,6 +123,7 @@ export class SiteBodyService {
       couleurSecondaire: '#0c6a3a',
       logo: '',
       url: '',
+      backgroundImage: '',
     };
   }
 }

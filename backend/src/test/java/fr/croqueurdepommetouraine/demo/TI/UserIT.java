@@ -29,7 +29,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
 @Transactional
-class UserIntegrationTest {
+class UserIT {
     @MockitoBean
     private JavaMailSender javaMailSender;
     @Autowired

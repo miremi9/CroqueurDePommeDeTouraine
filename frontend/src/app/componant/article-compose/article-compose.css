@@ -45,7 +45,7 @@
 .modal__input, .modal__textarea { padding: 8px 10px; border-radius: 6px; border: 1px solid #c9c9c9; }
 .modal__actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 6px; }
 .modal__btn { background: #e7e7e7; border: 1px solid #d3d3d3; color: #1a1a1a; padding: 8px 12px; border-radius: 6px; cursor: pointer; }
-.modal__btn--primary { background: #108d4e; border-color: #0c6a3a; color: #ffffff; }
+.modal__btn--primary { background: var(--primary-color, #094609); border-color: var(--primary-color, #094609); color: var(--text-on-primary, #ffffff); }
 
 /* Le label "Contenu" doit s'étirer pour que le textarea prenne la place restante */
 .modal__label--content {
@@ -53,10 +53,105 @@
   min-height: 0;
 }
 
-.modal__label--content .modal__textarea {
+.modal__label--content .content-editor-panel {
   flex: 1;
-  min-height: 200px;
-  resize: none;
+  min-height: 0;
+}
+
+.content-editor-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-height: 0;
+  position: relative;
+  z-index: 2;
+}
+
+.content-panel-label {
+  font-size: 11px;
+  color: #666;
+  font-weight: 500;
+  padding-left: 2px;
+}
+
+.content-editor {
+  flex: 2;
+  min-height: 140px;
+  padding: 8px 10px;
+  border: 1px solid #c9c9c9;
+  border-top: none;
+  border-radius: 0;
+  overflow-y: auto;
+  outline: none;
+  line-height: 1.5;
+  word-break: break-word;
+  position: relative;
+  background: #ffffff;
+  cursor: text;
+}
+
+.content-editor:empty::before {
+  content: attr(data-placeholder);
+  color: #999;
+  pointer-events: none;
+}
+
+/* HTML injecté via innerHTML : sans ::ng-deep, l'encapsulation Angular ignore table/th/td/etc. */
+.content-editor ::ng-deep strong,
+.content-editor ::ng-deep b {
+  font-weight: 700;
+}
+
+.content-editor ::ng-deep em,
+.content-editor ::ng-deep i {
+  font-style: italic;
+}
+
+.content-editor ::ng-deep u {
+  text-decoration: underline;
+}
+
+.content-editor ::ng-deep a {
+  color: var(--primary-color, #094609);
+  text-decoration: underline;
+}
+
+.content-editor ::ng-deep table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 0.5em 0;
+  border: 2px solid #333;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.content-editor ::ng-deep th,
+.content-editor ::ng-deep td {
+  border: 1px solid #333;
+  padding: 6px 8px;
+  text-align: left;
+}
+
+.content-editor ::ng-deep th {
+  background: #b4b4b4;
+  font-weight: 600;
+}
+
+.content-editor ::ng-deep td {
+  background: #f5f5f5;
+}
+
+.content-editor ::ng-deep tbody tr:nth-child(even) td {
+  background: #e8e8e8;
+}
+
+.content-html-source {
+  flex: 1;
+  min-height: 72px;
+  resize: vertical;
+  font-family: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, monospace;
+  font-size: 12px;
+  border-radius: 0 0 6px 6px;
 }
 
 /* Upload */
@@ -114,12 +209,16 @@
 /* Barre d'outils pour le contenu */
 .content-toolbar {
   display: flex;
+  flex-wrap: wrap;
   gap: 8px;
   padding: 8px;
   background: #f5f5f5;
   border: 1px solid #dcdcdc;
   border-bottom: none;
   border-radius: 6px 6px 0 0;
+  position: relative;
+  z-index: 1;
+  flex-shrink: 0;
 }
 
 .toolbar-btn {
@@ -144,10 +243,57 @@
   flex-shrink: 0;
 }
 
-/* Ajuster le textarea pour qu'il s'adapte à la barre d'outils */
-.content-toolbar + textarea.modal__textarea {
-  border-radius: 0 0 6px 6px;
+.toolbar-btn__format-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.toolbar-btn__format-icon--italic {
+  font-style: italic;
+  font-weight: 600;
+}
+
+.toolbar-btn__format-icon--underline {
+  text-decoration: underline;
+  font-weight: 600;
+}
+
+/* Zone d'édition sous la barre d'outils */
+.content-toolbar + .content-editor-panel .content-editor {
   border-top: none;
+}
+
+/* Modal d'erreur de publication */
+.error-modal-backdrop {
+  z-index: 1002;
+}
+
+.error-modal {
+  z-index: 1003;
+  max-width: 480px;
+}
+
+.error-modal__title {
+  color: #b00020;
+}
+
+.error-modal__message {
+  margin: 0 0 16px;
+  padding: 12px;
+  background: #fff5f5;
+  border: 1px solid #f5c2c2;
+  border-radius: 6px;
+  color: #1a1a1a;
+  font-size: 14px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 
 /* Modal de lien */
@@ -228,8 +374,8 @@
 
 .table-editor__cell-input:focus {
   outline: none;
-  border-color: #108d4e;
-  box-shadow: 0 0 0 2px rgba(16, 141, 78, 0.1);
+  border-color: var(--primary-color, #094609);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--primary-color, #094609) 15%, transparent);
 }
 
 

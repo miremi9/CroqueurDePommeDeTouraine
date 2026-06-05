@@ -1,4 +1,5 @@
-import { Component, EventEmitter, inject, Output, Input, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, EventEmitter, inject, Output, Input, OnInit, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IllustrationService } from '../../services/illustration.service';
@@ -15,13 +16,16 @@ import { catchError, map, switchMap } from 'rxjs/operators';
   templateUrl: './article-compose.html',
   styleUrls: ['./article-compose.css'],
 })
-export class ArticleCompose implements OnInit {
+export class ArticleCompose implements OnInit, AfterViewInit {
   @Output() close = new EventEmitter<void>();
   @Output() submitArticle = new EventEmitter<any>();
 
   @Input() idSection: number | null = null;
   @Input() article: ArticleResponse | null = null;
-  @ViewChild('contentTextarea', { static: false }) contentTextarea?: ElementRef<HTMLTextAreaElement>;
+  @ViewChild('contentEditor', { static: false }) contentEditor?: ElementRef<HTMLDivElement>;
+
+  private isSyncingContent = false;
+  private savedSelection: Range | null = null;
   
   title = '';
   content = '';
@@ -38,6 +42,10 @@ export class ArticleCompose implements OnInit {
   
   // État du modal de tableau
   showTableModal = false;
+
+  // Erreur de publication
+  showErrorModal = false;
+  errorMessage = '';
   tableRows = 2;
   tableCols = 2;
   tableCells: string[][] = []; // Tableau 2D pour stocker le contenu de chaque cellule
@@ -72,11 +80,78 @@ export class ArticleCompose implements OnInit {
     }
   }
 
+  ngAfterViewInit(): void {
+    this.syncEditorFromContent();
+  }
+
+  syncContentFromEditor(): void {
+    if (this.isSyncingContent || !this.contentEditor) return;
+    this.isSyncingContent = true;
+    this.content = this.contentEditor.nativeElement.innerHTML;
+    this.isSyncingContent = false;
+  }
+
+  onHtmlSourceChange(): void {
+    if (this.isSyncingContent || !this.contentEditor) return;
+    this.isSyncingContent = true;
+    this.contentEditor.nativeElement.innerHTML = this.content;
+    this.isSyncingContent = false;
+  }
+
+  private syncEditorFromContent(): void {
+    if (this.isSyncingContent || !this.contentEditor) return;
+    this.isSyncingContent = true;
+    this.contentEditor.nativeElement.innerHTML = this.content;
+    this.isSyncingContent = false;
+  }
+
+  private focusContentEditor(): void {
+    this.contentEditor?.nativeElement.focus();
+  }
+
+  private getSelectedText(): string {
+    return window.getSelection()?.toString() ?? '';
+  }
+
+  private saveSelection(): void {
+    const editor = this.contentEditor?.nativeElement;
+    const selection = window.getSelection();
+    if (!editor || !selection || selection.rangeCount === 0) {
+      this.savedSelection = null;
+      return;
+    }
+    const range = selection.getRangeAt(0);
+    if (editor.contains(range.commonAncestorContainer)) {
+      this.savedSelection = range.cloneRange();
+    } else {
+      this.savedSelection = null;
+    }
+  }
+
+  private restoreSelection(): void {
+    if (!this.savedSelection) return;
+    const selection = window.getSelection();
+    if (!selection) return;
+    selection.removeAllRanges();
+    selection.addRange(this.savedSelection);
+  }
+
+  private insertHtmlAtCursor(html: string): void {
+    const editor = this.contentEditor?.nativeElement;
+    if (!editor) return;
+    editor.focus();
+    this.restoreSelection();
+    document.execCommand('insertHTML', false, html);
+    this.savedSelection = null;
+    this.syncContentFromEditor();
+  }
+
   onBackdropClick() {
     this.close.emit();
   }
 
   onSubmit() {
+    this.syncContentFromEditor();
     console.log('onSubmit', this.title, this.content, this.selectedFiles);
     this.uploadIllustrations().pipe(
       switchMap((newIllustrations: string[]) => {
@@ -114,8 +189,65 @@ export class ArticleCompose implements OnInit {
       },
       error: (error) => {
         console.error('Erreur lors de la sauvegarde de l\'article:', error);
+        this.showPublishError(error);
       }
     });
+  }
+
+  showPublishError(error: unknown): void {
+    this.errorMessage = this.extractErrorMessage(error);
+    this.showErrorModal = true;
+  }
+
+  closeErrorModal(): void {
+    this.showErrorModal = false;
+    this.errorMessage = '';
+  }
+
+  private extractErrorMessage(error: unknown): string {
+    const defaultMsg = 'Impossible de publier l\'article.';
+
+    if (error instanceof Error && !(error instanceof HttpErrorResponse)) {
+      return error.message || defaultMsg;
+    }
+
+    const httpError = error as HttpErrorResponse;
+    const body = httpError?.error;
+
+    if (typeof body === 'string' && body.trim()) {
+      return body;
+    }
+
+    if (body && typeof body === 'object') {
+      const record = body as Record<string, unknown>;
+      if (typeof record['message'] === 'string' && record['message'].trim()) {
+        return record['message'];
+      }
+      if (typeof record['error'] === 'string' && record['error'].trim()) {
+        return record['error'];
+      }
+      const parts = Object.entries(record)
+        .map(([key, value]) => {
+          if (typeof value === 'string') {
+            return value.trim() ? `${key} ${value}` : key;
+          }
+          return `${key} ${String(value)}`;
+        })
+        .filter(part => part.trim());
+      if (parts.length) {
+        return parts.join('\n');
+      }
+    }
+
+    if (httpError?.status === 400) {
+      return 'Requête incorrecte (400). Vérifiez le titre, le contenu et les champs obligatoires.';
+    }
+
+    if (httpError?.message) {
+      return httpError.message;
+    }
+
+    return defaultMsg;
   }
 
   uploadIllustrations(): Observable<string[]> {
@@ -163,13 +295,8 @@ export class ArticleCompose implements OnInit {
 
   // Méthodes pour insérer un lien hypertexte
   openLinkModal(): void {
-    const textarea = this.contentTextarea?.nativeElement;
-    if (textarea) {
-      const start = textarea.selectionStart;
-      const end = textarea.selectionEnd;
-      // Récupérer le texte sélectionné
-      this.linkText = this.content.substring(start, end) || '';
-    }
+    this.saveSelection();
+    this.linkText = this.getSelectedText();
     this.linkUrl = '';
     this.showLinkModal = true;
   }
@@ -180,39 +307,28 @@ export class ArticleCompose implements OnInit {
     this.linkUrl = '';
   }
 
+  insertFormatting(tag: 'strong' | 'em' | 'u'): void {
+    const command = tag === 'strong' ? 'bold' : tag === 'em' ? 'italic' : 'underline';
+    this.focusContentEditor();
+    document.execCommand(command, false);
+    this.syncContentFromEditor();
+  }
+
   insertLink(): void {
     if (!this.linkUrl.trim()) {
       return;
     }
-    
-    const textarea = this.contentTextarea?.nativeElement;
-    if (!textarea) return;
 
-    const start = textarea.selectionStart;
-    const end = textarea.selectionEnd;
-    const selectedText = this.content.substring(start, end);
-    
-    // Utiliser le texte saisi ou le texte sélectionné, ou l'URL comme fallback
+    const selectedText = this.getSelectedText();
     const linkText = this.linkText.trim() || selectedText || this.linkUrl;
-    const linkHtml = `<a href="${this.linkUrl}">${linkText}</a>`;
-    
-    // Insérer le lien à la position du curseur ou remplacer le texte sélectionné
-    const before = this.content.substring(0, start);
-    const after = this.content.substring(end);
-    this.content = before + linkHtml + after;
-    
-    // Repositionner le curseur après l'insertion
-    setTimeout(() => {
-      textarea.focus();
-      const newPosition = start + linkHtml.length;
-      textarea.setSelectionRange(newPosition, newPosition);
-    }, 0);
-    
+    const linkHtml = `<a href="${this.escapeHtml(this.linkUrl)}">${this.escapeHtml(linkText)}</a>`;
+    this.insertHtmlAtCursor(linkHtml);
     this.closeLinkModal();
   }
 
   // Méthodes pour insérer un tableau
   openTableModal(): void {
+    this.saveSelection();
     this.tableRows = 2;
     this.tableCols = 2;
     this.initializeTableCells();
@@ -274,25 +390,14 @@ export class ArticleCompose implements OnInit {
     if (this.tableRows < 1 || this.tableCols < 1) {
       return;
     }
-    
-    const textarea = this.contentTextarea?.nativeElement;
-    if (!textarea) return;
 
-    const start = textarea.selectionStart;
-    const end = textarea.selectionEnd;
-    
-    // Générer le HTML du tableau avec le contenu des cellules
     let tableHtml = '<table>\n';
-    
-    // En-tête du tableau (première ligne en <th>)
     tableHtml += '  <thead>\n    <tr>\n';
     for (let col = 0; col < this.tableCols; col++) {
       const headerContent = this.tableCells[0]?.[col] || `Colonne ${col + 1}`;
       tableHtml += `      <th>${this.escapeHtml(headerContent)}</th>\n`;
     }
     tableHtml += '    </tr>\n  </thead>\n';
-    
-    // Corps du tableau (les autres lignes en <td>)
     tableHtml += '  <tbody>\n';
     for (let row = 1; row < this.tableRows; row++) {
       tableHtml += '    <tr>\n';
@@ -303,19 +408,8 @@ export class ArticleCompose implements OnInit {
       tableHtml += '    </tr>\n';
     }
     tableHtml += '  </tbody>\n</table>';
-    
-    // Insérer le tableau à la position du curseur ou remplacer le texte sélectionné
-    const before = this.content.substring(0, start);
-    const after = this.content.substring(end);
-    this.content = before + tableHtml + after;
-    
-    // Repositionner le curseur après l'insertion
-    setTimeout(() => {
-      textarea.focus();
-      const newPosition = start + tableHtml.length;
-      textarea.setSelectionRange(newPosition, newPosition);
-    }, 0);
-    
+
+    this.insertHtmlAtCursor(tableHtml);
     this.closeTableModal();
   }
 

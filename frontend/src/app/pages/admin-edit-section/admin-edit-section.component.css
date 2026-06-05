@@ -1,32 +1,37 @@
 .admin-page {
-  padding: 2rem;
-  background-color: var(--secondary-color, #0c6a3a);
-  color: var(--text-on-secondary, #ffffff);
+  padding: var(--space-6);
+  max-width: var(--content-max-width, 960px);
+  margin: 0 auto;
+  background-color: var(--background-color, #f5f5f5);
+  color: var(--text-color, #1a1a1a);
   min-height: 100vh;
 }
 
 h1 {
   margin-bottom: 1rem;
-  color: var(--text-on-secondary, #ffffff);
+  color: var(--primary-color, #094609);
 }
 
 .roles-table {
   width: 100%;
   border-collapse: collapse;
-  background-color: #ffffff;
+  background-color: var(--card-background, #ffffff);
+  border-radius: var(--card-radius);
+  overflow: hidden;
+  box-shadow: var(--card-shadow);
 }
 
 .roles-table th,
 .roles-table td {
-  border: 1px solid #ddd;
+  border: 1px solid var(--border-color, #e0e0e0);
   padding: 0.5rem;
-  color: #000000;
+  color: var(--text-color, #1a1a1a);
 }
 
 .roles-table thead th {
   background: #f3f4f6;
   text-align: left;
-  color: #000000;
+  color: var(--text-color, #1a1a1a);
 }
 
 .center {
@@ -50,18 +55,17 @@ button {
 input[type="text"],
 select {
   background-color: #ffffff;
-  color: #000000;
-  border: 1px solid #ddd;
+  color: var(--text-color, #1a1a1a);
+  border: 1px solid var(--border-color, #e0e0e0);
   padding: 0.3rem 0.4rem;
   border-radius: 4px;
 }
 
 input[type="text"]::placeholder {
-  color: #999;
+  color: var(--text-muted, #666666);
 }
 
 select option {
   background-color: #ffffff;
-  color: #000000;
+  color: var(--text-color, #1a1a1a);
 }
-
