@@ -2,7 +2,9 @@
      [class.has-image]="getImageIds().length > 0"
      [class.has-files]="getFileIds().length > 0"
      [class.image-left]="getImageIds().length > 0 && !isEvenIndex()"
-     [class.image-right]="getImageIds().length > 0 && isEvenIndex()">
+     [class.image-right]="getImageIds().length > 0 && isEvenIndex()"
+     [class.has-actions]="isAdmin$ | async">
+    <div class="article-main">
     <div class="article-content">
         <!-- Image à gauche (si index impair) -->
         <div *ngIf="getImageIds().length > 0 && !isEvenIndex()" class="article-image-container">
@@ -49,8 +51,9 @@
             </div>
         </ng-container>
     </div>
-    
-    <div *ngIf="isAdmin$ | async" class="article-edit">
+    </div>
+
+    <div *ngIf="isAdmin$ | async" class="article-actions">
         <button (click)="editArticle()" class="action-button" title="Modifier">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>

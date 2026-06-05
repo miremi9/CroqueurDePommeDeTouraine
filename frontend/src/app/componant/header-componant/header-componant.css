@@ -2,22 +2,25 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1.5rem;
-  background-color: var(--primary-color, #094609);
-  color: var(--text-on-primary, #ffffff);
-  padding: 12px 24px;
+  gap: var(--space-4);
+  background-color: var(--header-background, #fafafa);
+  color: var(--text-color, #1a1a1a);
+  padding: var(--space-2) var(--space-5);
+  border-bottom: 3px solid var(--primary-color, #094609);
 }
 
 .site-title {
   margin: 0;
-  font-size: 1.5rem;
+  font-size: 1.25rem;
   font-weight: 600;
   text-align: center;
   flex: 1;
+  color: var(--primary-color, #094609);
+  line-height: 1.2;
 }
 
 .logo {
-  height: 64px;
+  height: 40px;
   width: auto;
   object-fit: contain;
 }
