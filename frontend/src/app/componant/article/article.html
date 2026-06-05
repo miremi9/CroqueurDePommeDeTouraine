@@ -63,5 +63,38 @@
                 <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
             </svg>
         </button>
+        <button 
+        (click)="pinArticle()" 
+        class="action-button"
+        [title]="article.isPinned ? 'Désépingler' : 'Épingler'"
+      >
+      
+        <!-- Étoile pleine -->
+        <svg
+          *ngIf="article.isPinned"
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="currentColor"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <path d="M12 17.27l4.15 2.51c.76.46 1.69-.22 1.49-1.08l-1.1-4.72 3.67-3.18c.67-.58.31-1.68-.57-1.75l-4.83-.41-1.89-4.46c-.34-.81-1.5-.81-1.84 0L9.91 8.62l-4.83.41c-.88.07-1.24 1.17-.57 1.75l3.67 3.18-1.1 4.72c-.2.86.75 1.54 1.49 1.08l4.15-2.5z"></path>
+        </svg>
+      
+        <!-- Étoile vide -->
+        <svg
+          *ngIf="!article.isPinned"
+          width="20"
+          height="20"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <path d="M12 17.27l4.15 2.51c.76.46 1.69-.22 1.49-1.08l-1.1-4.72 3.67-3.18c.67-.58.31-1.68-.57-1.75l-4.83-.41-1.89-4.46c-.34-.81-1.5-.81-1.84 0L9.91 8.62l-4.83.41c-.88.07-1.24 1.17-.57 1.75l3.67 3.18-1.1 4.72c-.2.86.75 1.54 1.49 1.08l4.15-2.5z"></path>
+        </svg>
+      
+      </button>
     </div>
 </div>

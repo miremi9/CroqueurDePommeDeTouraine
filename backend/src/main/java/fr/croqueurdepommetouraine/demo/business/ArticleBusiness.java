@@ -100,11 +100,8 @@ public class ArticleBusiness {
             return;
         }
         for (IllustrationEntity illustration : article.getPathsImages()) {
-            try {
-                illustration = illustrationRepository.getReferenceById(illustration.getIdIllustration());
-            } catch (RuntimeException e) {
-                throw new NotFoundException("Illustration with id " + illustration + " not found.");
-            }
+            illustrationRepository.findById(illustration.getIdIllustration())
+                    .orElseThrow(() -> new NotFoundException("Illustration with id " + illustration.getIdIllustration() + " not found."));
         }
     }
 

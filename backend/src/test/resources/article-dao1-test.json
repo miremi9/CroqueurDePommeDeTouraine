@@ -9,7 +9,7 @@
     "dateCreation": "2024-04-24T10:00:00.000+00:00",
     "changed": false,
     "supprimed": false,
-    "idIllustrationDAOS": ["33333333-3333-3333-3333-333333333333"]
+    "idIllustrationDAOS": []
   },
   {
     "idArticle": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
@@ -21,6 +21,8 @@
     "dateCreation": "2024-04-25T10:00:00.000+00:00",
     "changed": true,
     "supprimed": false,
-    "idIllustrationDAOS": ["cccccccc-cccc-cccc-cccc-cccccccccccc"]
+    "idIllustrationDAOS": [
+      "cccccccc-cccc-cccc-cccc-cccccccccccc"
+    ]
   }
 ]

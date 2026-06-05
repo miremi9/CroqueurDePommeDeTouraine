@@ -18,4 +18,5 @@ public class ArticleDAO {
     Boolean changed;
     Boolean supprimed;
     List<UUID> idIllustrationDAOS;
+    Boolean isPinned;
 }

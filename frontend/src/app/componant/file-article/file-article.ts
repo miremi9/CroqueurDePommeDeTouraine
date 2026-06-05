@@ -64,9 +64,21 @@ export class FileArticle {
    */
   get sortedArticles(): ArticleModel[] {
     return [...this._articles].sort((a, b) => {
+  
+      // Les articles épinglés en premier
+      if (a.isPinned && !b.isPinned) {
+        return -1;
+      }
+  
+      if (!a.isPinned && b.isPinned) {
+        return 1;
+      }
+  
+      // Ensuite tri par date décroissante
       const dateA = new Date(a.dateCreation || 0).getTime();
       const dateB = new Date(b.dateCreation || 0).getTime();
-      return dateB - dateA; // Tri décroissant (plus récent en premier)
+  
+      return dateB - dateA;
     });
   }
 

@@ -42,6 +42,7 @@ public interface ArticleMapper {
     @Mapping(source = "dateCreation", target = "dateCreation")
     @Mapping(source = "changed", target = "changed")
     @Mapping(source = "supprimed", target = "supprimed")
+    @Mapping(source = "isPinned", target = "isPinned")
     ArticleEntity toEntity(ArticleDAO dao);
 
     @AfterMapping

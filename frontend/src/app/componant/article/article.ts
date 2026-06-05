@@ -197,6 +197,15 @@ export class Article implements OnChanges, OnDestroy {
   getRenderedContent(): SafeHtml {
     return this.renderedContent;
   }
+  pinArticle() {
+    this.articleService.updateArticle(this.article.idArticle, { ...this.article, isPinned: !this.article.isPinned }).subscribe({
+      next: (article: ArticleResponse) => {
+        this.article = article;
+        console.log('Article épinglé');
+      },
+      error: (e: any) => console.error('Échec de l\'épinglage de l\'article', e)
+    });
+  }
 
   private sanitizeContentWithSafeIframes(rawContent: string): string {
     const container = document.createElement('div');

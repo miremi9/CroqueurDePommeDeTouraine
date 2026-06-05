@@ -28,5 +28,6 @@ public class ArticleEntity {
     @ManyToMany
     List<IllustrationEntity> pathsImages;
     Boolean supprime;
+    Boolean isPinned;
 
 }

@@ -9,6 +9,7 @@ export interface ArticleResponse {
   changed?: boolean;
   supprimed?: boolean;
   idIllustrationDAOS?: string[]; // Liste de UUID sous forme de chaînes
+  isPinned?: boolean;
 }
 
 export interface IllustrationResponse {
