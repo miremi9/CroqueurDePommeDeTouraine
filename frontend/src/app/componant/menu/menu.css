@@ -1,7 +1,5 @@
 .menu {
-  background: var(--card-background, #ffffff);
   color: var(--text-color, #1a1a1a);
-  border-bottom: 1px solid var(--border-color, #e0e0e0);
   user-select: none;
 }
 
@@ -37,7 +35,7 @@
   border-radius: var(--radius-sm);
   transition: background 0.15s ease-in-out, color 0.15s ease-in-out;
   white-space: nowrap;
-  background: transparent;
+  background: #ffffff;
 }
 
 .menu__link:hover,
@@ -82,32 +80,18 @@
   color: var(--primary-color, #094609);
 }
 
-.menu__btn {
-  background: var(--primary-color, #094609);
-  color: var(--text-on-primary, #ffffff);
-  border: 1px solid var(--primary-color, #094609);
-  padding: var(--space-2) var(--space-3);
-  border-radius: var(--radius-sm);
-  cursor: pointer;
-}
+
 
 .menu__btn:hover {
   background: color-mix(in srgb, var(--primary-color, #094609) 85%, #000000);
 }
 
-/* Modal */
-.modal__backdrop {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.45);
-}
 
 .modal__window {
   position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background: #ffffff;
   color: #1a1a1a;
   min-width: 320px;
   max-width: 90vw;

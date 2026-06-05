@@ -36,6 +36,7 @@ export interface SectionResponse {
 export interface SiteBodyResponse {
   titre: string;
   logo: string; // Chaîne base64
+  backgroundImage: string; // Chaîne base64
   basDePage: string;
   couleurPrincipale: string; // hexa de la couleur principale
   couleurSecondaire: string; // hexa de la couleur secondaire

@@ -3,19 +3,31 @@
   align-items: center;
   justify-content: space-between;
   gap: var(--space-4);
-  background-color: var(--header-background, #fafafa);
-  color: var(--text-color, #1a1a1a);
+  /*background-color: var(--header-background, #fafafa);*/
   padding: var(--space-2) var(--space-5);
-  border-bottom: 3px solid var(--primary-color, #094609);
+
 }
 
+#header {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+
+    background: linear-gradient(
+    to bottom,
+    rgba(245, 245, 245, 0.6) 0%,
+    rgba(245, 245, 245, 0.6) 90%,
+    rgba(245, 245, 245, 0) 100%
+  );
+
+}
 .site-title {
-  margin: 0;
-  font-size: 1.25rem;
+  margin: 40px;
+  font-size: 4rem;
   font-weight: 600;
   text-align: center;
   flex: 1;
-  color: var(--primary-color, #094609);
+  color: var( #000000);
   line-height: 1.2;
 }
 

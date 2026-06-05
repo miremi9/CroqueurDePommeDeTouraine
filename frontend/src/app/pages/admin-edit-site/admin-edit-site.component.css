@@ -6,7 +6,7 @@
   padding: var(--space-6);
   max-width: var(--content-max-width, 960px);
   margin: 0 auto;
-  background-color: var(--background-color, #f5f5f5);
+  background-color: rgba(245, 245, 245, 0.95);
   color: var(--text-color, #1a1a1a);
   min-height: 100vh;
   border-radius: 0;
@@ -152,6 +152,26 @@
 .logo-preview__list img {
   max-height: 120px;
   object-fit: contain;
+}
+
+.background-preview {
+  border: 1px dashed var(--border-color, #e0e0e0);
+  border-radius: 8px;
+  padding: 1rem;
+  background: #f9f9f9;
+}
+
+.background-preview__title {
+  margin: 0 0 0.75rem;
+  font-weight: 600;
+  color: var(--text-color, #1a1a1a);
+}
+
+.background-preview__image {
+  max-width: 100%;
+  max-height: 200px;
+  object-fit: cover;
+  border-radius: 4px;
 }
 
 .actions {
