@@ -113,6 +113,58 @@ export class SiteBodyService {
       body.style.backgroundImage = 'none';
       body.style.backgroundColor = '#cccccc';
     }
+     // Appliquer le favicon dynamique si un logo est présent
+    const logoSource = this.resolveLogoSource(siteBody.logo);
+    this.setFavicon(logoSource);
+  }
+
+  private setFavicon(source: string | null): void {
+    if (!source || typeof document === 'undefined') {
+      return;
+    }
+
+    const head = document.head || document.getElementsByTagName('head')[0];
+
+    // Remove existing favicon links to avoid duplicates
+    const existing = head.querySelectorAll("link[rel~='icon']");
+    existing.forEach((el) => el.parentNode?.removeChild(el));
+
+    const link = document.createElement('link');
+    link.rel = 'icon';
+
+    // Try to load the image and render to a PNG data URL (works for SVG/PNG/remote images)
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => {
+      try {
+        const size = 64;
+        const canvas = document.createElement('canvas');
+        canvas.width = size;
+        canvas.height = size;
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+          ctx.clearRect(0, 0, size, size);
+          ctx.drawImage(img, 0, 0, size, size);
+          const pngData = canvas.toDataURL('image/png');
+          link.href = pngData;
+          head.appendChild(link);
+          return;
+        }
+      } catch (err) {
+        // fall through to set the original source as href
+      }
+      link.href = source;
+      head.appendChild(link);
+    };
+    img.onerror = () => {
+      // If loading failed (CORS or other), fallback to using the source directly
+      link.href = source;
+      head.appendChild(link);
+    };
+
+    // Start loading the image (data: or remote URL)
+    img.src = source;
+  
   }
 
   private createEmptySiteBody(): SiteBodyResponse {
