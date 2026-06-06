@@ -21,6 +21,7 @@ export interface UserResponse {
   idUser: string;
   nom: string;
   roles: string[];
+  email: string;
 }
 
 export interface SectionResponse {
