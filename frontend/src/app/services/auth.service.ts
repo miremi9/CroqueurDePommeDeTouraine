@@ -20,6 +20,10 @@ interface Credentials {
   motDePasse: string;
 }
 
+interface RegisterCredentials extends Credentials {
+  email?: string | null;
+}
+
 interface ForgotPasswordPayload {
   email: string;
 }
@@ -58,7 +62,7 @@ export class AuthService {
   isAuthenticated$ = this.authenticatedSubject.asObservable();
 
 
-  register(credentials: Credentials): Observable<string> {
+  register(credentials: RegisterCredentials): Observable<string> {
     // L'API renvoie du texte (ex: "User registered") → éviter le parse JSON
     return this.http.post(`${this.apiUrl}/register`, credentials, { responseType: 'text' });
   }

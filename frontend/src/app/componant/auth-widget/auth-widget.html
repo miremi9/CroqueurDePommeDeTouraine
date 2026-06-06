@@ -33,6 +33,12 @@
           <span>Nom d'utilisateur</span>
           <input class="modal__input" type="text" [(ngModel)]="username" name="username" required />
         </label>
+        @if (modalMode === 'register') {
+          <label class="modal__label">
+            <span>Email</span>
+            <input class="modal__input" type="email" [(ngModel)]="registerEmail" name="registerEmail" required />
+          </label>
+        }
         <label class="modal__label">
           <span>Mot de passe</span>
           <input class="modal__input" type="password" [(ngModel)]="password" name="password" required />
