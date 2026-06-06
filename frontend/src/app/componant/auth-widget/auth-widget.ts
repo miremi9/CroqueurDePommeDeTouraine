@@ -19,6 +19,7 @@ export class AuthWidgetComponent implements OnInit {
   modalMode: 'login' | 'register' | 'reset' | 'edit-profile' = 'login';
   username = '';
   password = '';
+  registerEmail = '';
   resetToken = '';
   resetNewPassword = '';
   profileName = '';
@@ -66,6 +67,7 @@ export class AuthWidgetComponent implements OnInit {
     this.lastAuthError = null;
     this.username = '';
     this.password = '';
+    this.registerEmail = '';
     this.resetToken = '';
     this.resetNewPassword = '';
     this.showModal = true;
@@ -118,7 +120,23 @@ export class AuthWidgetComponent implements OnInit {
     } else if (this.modalMode === 'reset') {
       this.onResetSubmit();
     } else {
-      this.authService.register(cred).subscribe({
+      // registration branch: require name, email, password
+      const nom = this.username.trim();
+      const email = this.registerEmail.trim();
+      const motDePasse = this.password;
+
+      if (!nom || !email || !motDePasse) {
+        this.errorMessage = 'Veuillez renseigner le nom, l\'email et le mot de passe.';
+        return;
+      }
+      // simple email validation
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        this.errorMessage = 'Adresse email invalide.';
+        return;
+      }
+
+      this.authService.register({ nom, motDePasse, email }).subscribe({
         next: () => {
           this.lastAuthError = null;
           // Affiche une pop-up de succès et ferme la fenêtre
@@ -129,6 +147,10 @@ export class AuthWidgetComponent implements OnInit {
         error: (err) => {
           // Affiche le message d'erreur de la requête si disponible
           console.log('erreur d\'inscription', err);
+          if (err && err.status === 400) {
+            alert('ok');
+            return;
+          }
           const apiMsg = err?.error?.message || err?.message;
           this.errorMessage = apiMsg ? String(apiMsg) : "Échec de l'inscription.";
           this.cdr.detectChanges();

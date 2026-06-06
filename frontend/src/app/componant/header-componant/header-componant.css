@@ -2,22 +2,37 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1.5rem;
-  background-color: var(--primary-color, #094609);
-  color: var(--text-on-primary, #ffffff);
-  padding: 12px 24px;
+  gap: var(--space-4);
+  /*background-color: var(--header-background, #fafafa);*/
+  padding: var(--space-2) var(--space-5);
+
 }
 
+#header {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+
+    background: linear-gradient(
+    to bottom,
+    rgba(245, 245, 245, 0.6) 0%,
+    rgba(245, 245, 245, 0.6) 90%,
+    rgba(245, 245, 245, 0) 100%
+  );
+
+}
 .site-title {
-  margin: 0;
-  font-size: 1.5rem;
+  margin: 40px;
+  font-size: 4rem;
   font-weight: 600;
   text-align: center;
   flex: 1;
+  color: var( #000000);
+  line-height: 1.2;
 }
 
 .logo {
-  height: 64px;
+  height: 40px;
   width: auto;
   object-fit: contain;
 }

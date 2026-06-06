@@ -69,6 +69,35 @@
           />
         </div>
       </div>
+      <div class="form-row">
+        <label for="backgroundImage">Image de fond</label>
+        <input
+          id="backgroundImage"
+          type="file"
+          accept="image/*"
+          (change)="onBackgroundImageSelected($event)"
+        />
+        <small class="input-help">
+          Laissez vide pour conserver l'image actuelle.
+        </small>
+        <button
+          type="button"
+          class="link-reset"
+          *ngIf="hasBackgroundImage"
+          (click)="onRemoveBackgroundImage()"
+        >
+          Supprimer l'image de fond
+        </button>
+      </div>
+
+      <div *ngIf="backgroundImagePreview" class="background-preview">
+        <p class="background-preview__title">Aperçu de l'image de fond</p>
+        <img
+          [src]="backgroundImagePreview"
+          alt="Aperçu de l'image de fond"
+          class="background-preview__image"
+        />
+      </div>
 
       <div class="form-row">
         <label for="logo">Logo</label>

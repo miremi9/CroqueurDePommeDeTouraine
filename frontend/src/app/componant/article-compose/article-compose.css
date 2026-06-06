@@ -45,7 +45,7 @@
 .modal__input, .modal__textarea { padding: 8px 10px; border-radius: 6px; border: 1px solid #c9c9c9; }
 .modal__actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 6px; }
 .modal__btn { background: #e7e7e7; border: 1px solid #d3d3d3; color: #1a1a1a; padding: 8px 12px; border-radius: 6px; cursor: pointer; }
-.modal__btn--primary { background: #108d4e; border-color: #0c6a3a; color: #ffffff; }
+.modal__btn--primary { background: var(--primary-color, #094609); border-color: var(--primary-color, #094609); color: var(--text-on-primary, #ffffff); }
 
 /* Le label "Contenu" doit s'étirer pour que le textarea prenne la place restante */
 .modal__label--content {
@@ -112,7 +112,7 @@
 }
 
 .content-editor ::ng-deep a {
-  color: #108d4e;
+  color: var(--primary-color, #094609);
   text-decoration: underline;
 }
 
@@ -374,8 +374,8 @@
 
 .table-editor__cell-input:focus {
   outline: none;
-  border-color: #108d4e;
-  box-shadow: 0 0 0 2px rgba(16, 141, 78, 0.1);
+  border-color: var(--primary-color, #094609);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--primary-color, #094609) 15%, transparent);
 }
 
 

@@ -14,9 +14,12 @@ public class SiteBodyEntity {
     @Lob
     @Column
     String BasDePage;
-    @Column
+    @Column(columnDefinition = "LONGTEXT")
     @Lob
     String logo;
+    @Column(columnDefinition = "LONGTEXT")
+    @Lob
+    String backgroundImage;
     String CouleurPrincipale;
     String CouleurSecondaire;
     String Url;

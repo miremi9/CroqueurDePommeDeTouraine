@@ -1,6 +1,5 @@
 .menu {
-  background: var(--secondary-color, #108d4e);
-  color: var(--text-on-secondary, #ffffff);
+  color: var(--text-color, #1a1a1a);
   user-select: none;
 }
 
@@ -12,11 +11,11 @@
 
 .menu__list {
   margin: 0;
-  padding: 0 14px;
+  padding: 0 var(--space-4);
   list-style: none;
   display: flex;
   justify-content: center;
-  gap: 8px;
+  gap: var(--space-2);
 }
 
 .menu__item {
@@ -25,36 +24,39 @@
 
 .menu__item--has-dropdown {
   position: relative;
-  padding-bottom: 8px; /* agrandit la zone de survol pour le dropdown */
+  padding-bottom: var(--space-2);
 }
 
 .menu__link {
   display: block;
-  padding: 12px 20px;
-  color: var(--text-on-primary, #ffffff);
+  padding: var(--space-3) var(--space-4);
+  color: var(--text-color, #1a1a1a);
   text-decoration: none;
-  border-radius: 6px;
-  transition: background 0.15s ease-in-out;
+  border-radius: var(--radius-sm);
+  transition: background 0.15s ease-in-out, color 0.15s ease-in-out;
   white-space: nowrap;
-  background: var(--primary-color, #052b18);
+  background: #ffffff;
 }
 
 .menu__link:hover,
 .menu__link.router-link-active {
-  background: color-mix(in srgb, var(--primary-color, #052b18) 85%, #ffffff);
+  background: color-mix(in srgb, var(--primary-color, #094609) 10%, #ffffff);
+  color: var(--primary-color, #094609);
 }
 
 .menu__dropdown {
   position: absolute;
-  top: calc(100% - 8px); /* remonte légèrement le dropdown pour éviter un \"trou\" de survol */
+  top: calc(100% - 8px);
   left: 0;
-  margin-top: 4px;
+  margin-top: var(--space-1);
   padding: 0;
   list-style: none;
-  background: var(--primary-color, #052b18);
-  border-radius: 6px;
+  background: var(--card-background, #ffffff);
+  border: 1px solid var(--border-color, #e0e0e0);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--card-shadow);
   min-width: 180px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   z-index: 1000;
   overflow: hidden;
 }
@@ -65,52 +67,37 @@
 
 .menu__dropdown-link {
   display: block;
-  padding: 10px 20px;
-  color: var(--text-on-primary, #ffffff);
+  padding: var(--space-3) var(--space-4);
+  color: var(--text-color, #1a1a1a);
   text-decoration: none;
-  transition: background 0.15s ease-in-out;
+  transition: background 0.15s ease-in-out, color 0.15s ease-in-out;
   white-space: nowrap;
 }
 
 .menu__dropdown-link:hover,
 .menu__dropdown-link--active {
-  background: color-mix(in srgb, var(--primary-color, #052b18) 85%, #ffffff);
+  background: color-mix(in srgb, var(--primary-color, #094609) 10%, #ffffff);
+  color: var(--primary-color, #094609);
 }
 
-/* Auth styles déplacés dans auth-widget */
 
-.menu__btn {
-  background: var(--primary-color, #052b18);
-  color: var(--text-on-primary, #ffffff);
-  border: 1px solid color-mix(in srgb, var(--primary-color, #052b18) 70%, #ffffff);
-  padding: 8px 12px;
-  border-radius: 6px;
-  cursor: pointer;
-}
 
 .menu__btn:hover {
-  background: color-mix(in srgb, var(--primary-color, #052b18) 80%, #ffffff);
+  background: color-mix(in srgb, var(--primary-color, #094609) 85%, #000000);
 }
 
-/* Modal */
-.modal__backdrop {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.45);
-}
 
 .modal__window {
   position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background: #ffffff;
   color: #1a1a1a;
   min-width: 320px;
   max-width: 90vw;
-  padding: 16px;
-  border-radius: 10px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+  padding: var(--space-4);
+  border-radius: var(--card-radius);
+  box-shadow: var(--card-shadow);
 }
 
 .modal__title {
@@ -146,19 +133,18 @@
   background: #e7e7e7;
   border: 1px solid #d3d3d3;
   color: #1a1a1a;
-  padding: 8px 12px;
-  border-radius: 6px;
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
   cursor: pointer;
 }
 
 .modal__btn--primary {
-  background: var(--secondary-color, #108d4e);
-  border-color: color-mix(in srgb, var(--secondary-color, #108d4e) 80%, #000);
-  color: var(--text-on-secondary, #ffffff);
+  background: var(--primary-color, #094609);
+  border-color: var(--primary-color, #094609);
+  color: var(--text-on-primary, #ffffff);
 }
 
 .modal__error {
   color: #b00020;
   margin: 8px 0 0;
 }
-

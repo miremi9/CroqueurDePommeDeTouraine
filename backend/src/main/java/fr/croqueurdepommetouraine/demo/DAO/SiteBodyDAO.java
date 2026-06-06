@@ -11,5 +11,6 @@ public class SiteBodyDAO {
     String CouleurPrincipale;
     String CouleurSecondaire;
     String Url;
+    String backgroundImage;
 
 }
