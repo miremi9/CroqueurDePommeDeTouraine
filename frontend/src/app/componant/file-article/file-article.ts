@@ -82,6 +82,10 @@ export class FileArticle {
     });
   }
 
+  get title(): string {
+    return this.section?.nom ?? 'Section Articles';
+  }
+
   handleArticleSaved(article: ArticleModel) {
     const index = this._articles.findIndex(a => a.idArticle === article.idArticle);
     if (index !== -1) {

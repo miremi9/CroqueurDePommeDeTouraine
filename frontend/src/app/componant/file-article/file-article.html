@@ -1,6 +1,6 @@
 <!-- affiche un ensemble d'articles -->
 <div class="background-article">
-  <h1> Section Articles </h1>
+  <h1>{{ section?.nom ?? 'Section Articles' }}</h1>
   @if (canWrite$ | async) {
     <div class="file-actions">
       <button class="file-actions__btn" (click)="openCompose()">Rédiger un nouvel article</button>
