@@ -19,4 +19,5 @@ public class ArticleDAO {
     Boolean supprimed;
     List<UUID> idIllustrationDAOS;
     Boolean isPinned;
+    Boolean isFrontPage;
 }

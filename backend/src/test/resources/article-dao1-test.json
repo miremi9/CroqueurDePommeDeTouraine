@@ -10,6 +10,7 @@
     "changed": false,
     "supprimed": false,
     "idIllustrationDAOS": []
+    ,"isFrontPage": false
   },
   {
     "idArticle": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
@@ -24,5 +25,6 @@
     "idIllustrationDAOS": [
       "cccccccc-cccc-cccc-cccc-cccccccccccc"
     ]
+    ,"isFrontPage": false
   }
 ]

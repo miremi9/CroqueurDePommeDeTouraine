@@ -4,6 +4,7 @@
   "content": "Contenu2",
   "author": "admin",
   "dateCreation": "2026-04-27T10:00:00",
+  "isFrontPage": false,
   "changed": false,
   "supprimed": false,
   "pathsImages": [],

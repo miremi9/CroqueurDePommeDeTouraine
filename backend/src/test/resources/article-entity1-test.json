@@ -24,6 +24,7 @@
     "supprimed": false,
     "pathsImages": [],
     "supprime": false
+    ,"isFrontPage": false
   },
   {
     "idArticle": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
@@ -54,5 +55,6 @@
       }
     ],
     "supprime": false
+    ,"isFrontPage": false
   }
 ]

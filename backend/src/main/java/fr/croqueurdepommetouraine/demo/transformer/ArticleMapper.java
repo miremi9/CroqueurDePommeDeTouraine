@@ -19,6 +19,7 @@ public interface ArticleMapper {
     @Mapping(source = "section.idSection", target = "idSection")
     @Mapping(source = "author.idUser", target = "idAuthor")
     @Mapping(source = "author.nom", target = "authorName")
+    @Mapping(source = "isFrontPage", target = "isFrontPage")
     ArticleDAO toDAO(ArticleEntity entity);
 
     @AfterMapping
@@ -43,6 +44,7 @@ public interface ArticleMapper {
     @Mapping(source = "changed", target = "changed")
     @Mapping(source = "supprimed", target = "supprimed")
     @Mapping(source = "isPinned", target = "isPinned")
+    @Mapping(source = "isFrontPage", target = "isFrontPage")
     ArticleEntity toEntity(ArticleDAO dao);
 
     @AfterMapping

@@ -29,5 +29,6 @@ public class ArticleEntity {
     List<IllustrationEntity> pathsImages;
     Boolean supprime;
     Boolean isPinned;
+    Boolean isFrontPage;
 
 }
