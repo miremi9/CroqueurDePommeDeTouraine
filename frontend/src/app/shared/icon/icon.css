@@ -1,0 +1,8 @@
+:host {
+    display: inline-flex;
+    align-items: center;
+  }
+  
+  svg {
+    flex-shrink: 0;
+  }

@@ -7,11 +7,23 @@ import { map, combineLatest, catchError, of, tap } from 'rxjs';
 import { ArticleResponse } from '../../model/article-response.model';
 import { ArticleService } from '../../services/article.service';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { IconComponent } from '../../shared/icon/icon';
+
+interface ArticleImageView {
+  id: string;
+  url: string;
+  name: string;
+}
+
+interface ArticleFileView {
+  id: string;
+  name: string;
+}
 
 @Component({
   selector: 'app-article',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, IconComponent],
   templateUrl: './article.html',
   styleUrls: ['./article.css'],
   encapsulation: ViewEncapsulation.None,
@@ -29,6 +41,32 @@ export class Article implements OnChanges, OnDestroy {
   private renderedContent: SafeHtml = this.sanitizer.bypassSecurityTrustHtml('');
   private imageIds: string[] = [];
   private fileIds: string[] = [];
+
+  get images(): ArticleImageView[] {
+    return this.imageIds.flatMap(id => {
+      const url = this.imageUrls.get(id);
+      if (!url) {
+        return [];
+      }
+      return [{ id, url, name: this.getFileName(id) }];
+    });
+  }
+
+  get files(): ArticleFileView[] {
+    return this.fileIds.map(id => ({ id, name: this.getFileName(id) }));
+  }
+
+  get isEven(): boolean {
+    return this.isEvenIndex();
+  }
+
+  get isPinned(): boolean {
+    return this.isArticlePinned();
+  }
+
+  get contentHtml(): SafeHtml {
+    return this.renderedContent;
+  }
 
   @Input() article: ArticleResponse = {
     title: '',

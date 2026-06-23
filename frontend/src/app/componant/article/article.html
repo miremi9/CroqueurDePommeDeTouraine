@@ -1,99 +1,103 @@
-<div class="article" 
-     [class.has-image]="getImageIds().length > 0"
-     [class.has-files]="getFileIds().length > 0"
-     [class.image-left]="getImageIds().length > 0 && !isEvenIndex()"
-     [class.image-right]="getImageIds().length > 0 && isEvenIndex()"
-     [class.has-actions]="isAdmin$ | async">
+<ng-container *ngIf="isAdmin$ | async as isAdmin">
+<div class="article"
+     [class.has-image]="images.length"
+     [class.has-files]="files.length"
+     [class.image-left]="images.length && !isEven"
+     [class.image-right]="images.length && isEven"
+     [class.has-actions]="isAdmin">
+
     <div class="article-main">
-    <div class="article-content">
-        <!-- Image à gauche (si index impair) -->
-        <div *ngIf="getImageIds().length > 0 && !isEvenIndex()" class="article-image-container">
-            <ng-container *ngFor="let idIllustration of getImageIds()">
-                <img *ngIf="getImageUrl(idIllustration)" 
-                     [src]="getImageUrl(idIllustration)" 
-                     [alt]="getFileName(idIllustration)"
-                     class="article-image">
+
+        <div class="article-content">
+
+            <!-- Image à gauche -->
+            <ng-container *ngIf="images.length && !isEven">
+                <ng-template [ngTemplateOutlet]="imagesTemplate"></ng-template>
             </ng-container>
-        </div>
 
-        <!-- Contenu texte -->
-        <div class="article-texte">
-            <h1>{{ article.title }}</h1>
-            <div class="article-content-wrapper">
-                <div class="article-content-text" [innerHTML]="getRenderedContent()"></div>
-                <p class="article-author">Par {{ article.authorName }}</p>
+            <!-- Texte -->
+            <div class="article-texte">
+                <h1>{{ article.title }}</h1>
+
+                <div class="article-content-wrapper">
+                    <div class="article-content-text"
+                         [innerHTML]="contentHtml">
+                    </div>
+
+                    <p class="article-author">
+                        Par {{ article.authorName }}
+                    </p>
+                </div>
             </div>
-        </div>
 
-        <!-- Image à droite (si index pair) -->
-        <div *ngIf="getImageIds().length > 0 && isEvenIndex()" class="article-image-container">
-            <ng-container *ngFor="let idIllustration of getImageIds()">
-                <img *ngIf="getImageUrl(idIllustration)" 
-                     [src]="getImageUrl(idIllustration)" 
-                     [alt]="getFileName(idIllustration)"
-                     class="article-image">
+            <!-- Image à droite -->
+            <ng-container *ngIf="images.length && isEven">
+                <ng-template [ngTemplateOutlet]="imagesTemplate"></ng-template>
             </ng-container>
+
         </div>
-    </div>
 
-    <!-- Fichiers en bas -->
-    <div *ngIf="getFileIds().length > 0" class="article-files">
-        <ng-container *ngFor="let idIllustration of getFileIds()">
-            <div class="file-download-container"
-                 (click)="downloadFile(idIllustration)"
-                 [title]="'Télécharger ' + getFileName(idIllustration)">
-                <svg class="download-icon" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                    <polyline points="7 10 12 15 17 10"></polyline>
-                    <line x1="12" y1="15" x2="12" y2="3"></line>
-                </svg>
-                <span class="file-name">{{ getFileName(idIllustration) }}</span>
+
+        <!-- Fichiers -->
+        <div *ngIf="files.length" class="article-files">
+
+            <div *ngFor="let file of files"
+                 class="file-download-container"
+                 (click)="downloadFile(file.id)"
+                 [title]="'Télécharger ' + file.name">
+
+                 <app-icon name="download" [size]="64"/>
+
+                <span class="file-name">
+                    {{ file.name }}
+                </span>
+
             </div>
-        </ng-container>
-    </div>
+
+        </div>
+
     </div>
 
-    <div *ngIf="isAdmin$ | async" class="article-actions">
-        <button (click)="editArticle()" class="action-button" title="Modifier">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-            </svg>
+
+    <!-- Actions administrateur -->
+    <div *ngIf="isAdmin" class="article-actions">
+
+        <button (click)="editArticle()"
+                class="action-button"
+                title="Modifier">
+            <app-icon name="edit"/>
         </button>
-        <button (click)="deleteArticle()" class="action-button" title="Supprimer">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <polyline points="3 6 5 6 21 6"></polyline>
-                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
-            </svg>
+
+        <button (click)="deleteArticle()"
+                class="action-button"
+                title="Supprimer">
+            <app-icon name="delete"/>
         </button>
-        <button 
-        (click)="pinArticle()" 
-        class="action-button"
-        [title]="isArticlePinned() ? 'Désépingler' : 'Épingler (fixer en haut de la page)'"
-      >
-        <svg
-          *ngIf="isArticlePinned()"
-          width="20"
-          height="20"
-          viewBox="0 0 24 24"
-          fill="currentColor"
-          stroke="currentColor"
-          stroke-width="2"
-        >
-          <path d="M12 17.27l4.15 2.51c.76.46 1.69-.22 1.49-1.08l-1.1-4.72 3.67-3.18c.67-.58.31-1.68-.57-1.75l-4.83-.41-1.89-4.46c-.34-.81-1.5-.81-1.84 0L9.91 8.62l-4.83.41c-.88.07-1.24 1.17-.57 1.75l3.67 3.18-1.1 4.72c-.2.86.75 1.54 1.49 1.08l4.15-2.5z"></path>
-        </svg>
-        <svg
-          *ngIf="!isArticlePinned()"
-          width="20"
-          height="20"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-        >
-          <path d="M12 17.27l4.15 2.51c.76.46 1.69-.22 1.49-1.08l-1.1-4.72 3.67-3.18c.67-.58.31-1.68-.57-1.75l-4.83-.41-1.89-4.46c-.34-.81-1.5-.81-1.84 0L9.91 8.62l-4.83.41c-.88.07-1.24 1.17-.57 1.75l3.67 3.18-1.1 4.72c-.2.86.75 1.54 1.49 1.08l4.15-2.5z"></path>
-        </svg>
-      
-      </button>
+
+        <button (click)="pinArticle()"
+                class="action-button"
+                [title]="isPinned
+                    ? 'Désépingler'
+                    : 'Épingler (fixer en haut de la page)'">
+            <app-icon name="star" [filled]="isPinned"/>
+        </button>
+
     </div>
+
 </div>
+
+
+<!-- Template réutilisable pour les images -->
+<ng-template #imagesTemplate>
+
+    <div class="article-image-container">
+
+        <img *ngFor="let image of images"
+             [src]="image.url"
+             [alt]="image.name"
+             class="article-image">
+
+    </div>
+
+</ng-template>
+</ng-container>
