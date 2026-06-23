@@ -5,22 +5,28 @@ import fr.croqueurdepommetouraine.demo.Entity.SiteBodyEntity;
 import fr.croqueurdepommetouraine.demo.repository.RoleRepository;
 import fr.croqueurdepommetouraine.demo.repository.SiteBodyRepository;
 import fr.croqueurdepommetouraine.demo.security.ROLES;
+import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.CommandLineRunner;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
+import org.springframework.stereotype.Component;
 
 import java.util.Set;
 
-@Configuration
+@Component
+@AllArgsConstructor
 public class DataInitializer {
 
     private static final Logger logger = LoggerFactory.getLogger(DataInitializer.class);
 
-    @Bean
-    CommandLineRunner initRoles(RoleRepository roleRepository) {
-        return args -> {
+    private final RoleRepository roleRepository;
+    private final SiteBodyRepository siteBodyRepository;
+    
+
+    @EventListener(ApplicationReadyEvent.class)
+    public void initRoles() {
+        try {
             // Rôles provenant de la constante ROLES
             Set<String> roles = ROLES.ALL_ROLES;
             for (String r : roles) {
@@ -31,12 +37,14 @@ public class DataInitializer {
                     return roleRepository.save(role);
                 });
             }
-        };
+        } catch (Exception e) {
+            logger.warn("Impossible d'initialiser les rôles - tables pas encore prêtes: {}", e.getMessage());
+        }
     }
 
-    @Bean
-    CommandLineRunner initSiteBody(SiteBodyRepository siteBodyRepository) {
-        return args -> {
+    @EventListener(ApplicationReadyEvent.class)
+    public void initSiteBody() {
+        try {
             long count = siteBodyRepository.count();
             if (count == 0) {
                 logger.info("Initialisation des données de SiteBody");
@@ -49,7 +57,9 @@ public class DataInitializer {
             } else {
                 logger.info("Données de SiteBody déjà initialisées ({} enregistrements)", count);
             }
-        };
+        } catch (Exception e) {
+            logger.warn("Impossible d'initialiser SiteBody - tables pas encore prêtes: {}", e.getMessage());
+        }
     }
 
 }
