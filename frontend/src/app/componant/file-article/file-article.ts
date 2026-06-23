@@ -66,11 +66,11 @@ export class FileArticle {
     return [...this._articles].sort((a, b) => {
   
       // Les articles épinglés en premier
-      if (a.isPinned && !b.isPinned) {
+      if ((a.isPinned ?? false) && !(b.isPinned ?? false)) {
         return -1;
       }
-  
-      if (!a.isPinned && b.isPinned) {
+
+      if (!(a.isPinned ?? false) && (b.isPinned ?? false)) {
         return 1;
       }
   
@@ -87,6 +87,15 @@ export class FileArticle {
   }
 
   handleArticleSaved(article: ArticleModel) {
+    this.replaceArticle(article);
+    this.articleSaved.emit(article);
+  }
+
+  handleArticleUpdated(article: ArticleModel) {
+    this.replaceArticle(article);
+  }
+
+  private replaceArticle(article: ArticleModel): void {
     const index = this._articles.findIndex(a => a.idArticle === article.idArticle);
     if (index !== -1) {
       this._articles = [
@@ -97,7 +106,6 @@ export class FileArticle {
     } else {
       this._articles = [article, ...this._articles];
     }
-    this.articleSaved.emit(article);
   }
 
   handleArticleDeleted(articleId: string) {

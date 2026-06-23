@@ -47,6 +47,7 @@ export class Article implements OnChanges, OnDestroy {
 
   @Output() edit = new EventEmitter<ArticleResponse>();
   @Output() deleted = new EventEmitter<string>();
+  @Output() articleUpdated = new EventEmitter<ArticleResponse>();
 
   roles$ = this.auth.roles$;
   id$ = this.roles$.pipe(map(() => this.auth.getId()));
@@ -197,13 +198,19 @@ export class Article implements OnChanges, OnDestroy {
   getRenderedContent(): SafeHtml {
     return this.renderedContent;
   }
-  pinArticle() {
-    this.articleService.updateArticle(this.article.idArticle, { ...this.article, isPinned: !this.article.isPinned }).subscribe({
+  isArticlePinned(): boolean {
+    return this.article.isPinned ?? false;
+  }
+
+  pinArticle(): void {
+    const nextPinned = !(this.article.isPinned ?? false);
+
+    this.articleService.updateArticle(this.article.idArticle, { ...this.article, isPinned: nextPinned }).subscribe({
       next: (article: ArticleResponse) => {
-        this.article = article;
-        console.log('Article épinglé');
+        this.articleUpdated.emit(article);
+        this.cdr.detectChanges();
       },
-      error: (e: any) => console.error('Échec de l\'épinglage de l\'article', e)
+      error: (e: unknown) => console.error('Échec de l\'épinglage de l\'article', e)
     });
   }
 
