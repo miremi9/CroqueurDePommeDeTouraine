@@ -1,10 +1,9 @@
-<ng-container *ngIf="isAdmin$ | async as isAdmin">
 <div class="article"
      [class.has-image]="images.length"
      [class.has-files]="files.length"
      [class.image-left]="images.length && !isEven"
      [class.image-right]="images.length && isEven"
-     [class.has-actions]="isAdmin">
+     [class.has-actions]="isAdmin$ | async">
 
     <div class="article-main">
 
@@ -60,7 +59,7 @@
 
 
     <!-- Actions administrateur -->
-    <div *ngIf="isAdmin" class="article-actions">
+    <div *ngIf="isAdmin$ | async" class="article-actions">
 
         <button (click)="editArticle()"
                 class="action-button"
@@ -109,4 +108,3 @@
     </div>
 
 </ng-template>
-</ng-container>
