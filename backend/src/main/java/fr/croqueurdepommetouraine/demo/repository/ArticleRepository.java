@@ -13,4 +13,6 @@ public interface ArticleRepository extends JpaRepository<ArticleEntity, UUID> {
 
     List<ArticleEntity> findBySection_IdSection(Long sectionId);
 
+    List<ArticleEntity> findByIsFrontPageTrueAndSupprimedFalseOrderByDateCreationDesc();
+
 }

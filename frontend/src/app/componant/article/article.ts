@@ -61,7 +61,11 @@ export class Article implements OnChanges, OnDestroy {
   }
 
   get isPinned(): boolean {
-    return this.isArticlePinned();
+    return this.article.isPinned ?? false;
+  }
+
+  get isFrontPage(): boolean {
+    return this.article.isFrontPage ?? false;
   }
 
   get contentHtml(): SafeHtml {
@@ -82,6 +86,7 @@ export class Article implements OnChanges, OnDestroy {
   };
 
   @Input() index: number = 0;
+  @Input() showPinButton = true;
 
   @Output() edit = new EventEmitter<ArticleResponse>();
   @Output() deleted = new EventEmitter<string>();
@@ -236,19 +241,23 @@ export class Article implements OnChanges, OnDestroy {
   getRenderedContent(): SafeHtml {
     return this.renderedContent;
   }
-  isArticlePinned(): boolean {
-    return this.article.isPinned ?? false;
+  pinArticle(): void {
+    this.toggleArticleFlag('isPinned');
   }
 
-  pinArticle(): void {
-    const nextPinned = !(this.article.isPinned ?? false);
+  toggleFrontPage(): void {
+    this.toggleArticleFlag('isFrontPage');
+  }
 
-    this.articleService.updateArticle(this.article.idArticle, { ...this.article, isPinned: nextPinned }).subscribe({
+  private toggleArticleFlag(field: 'isPinned' | 'isFrontPage'): void {
+    const next = !(this.article[field] ?? false);
+
+    this.articleService.updateArticle(this.article.idArticle, { ...this.article, [field]: next }).subscribe({
       next: (article: ArticleResponse) => {
         this.articleUpdated.emit(article);
         this.cdr.detectChanges();
       },
-      error: (e: unknown) => console.error('Échec de l\'épinglage de l\'article', e)
+      error: (e: unknown) => console.error(`Échec de la mise à jour de l'article (${field})`, e)
     });
   }
 

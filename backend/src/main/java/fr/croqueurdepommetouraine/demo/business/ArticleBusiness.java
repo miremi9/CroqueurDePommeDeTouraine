@@ -55,6 +55,15 @@ public class ArticleBusiness {
                 .toList();
     }
 
+    public List<ArticleDAO> getFrontPageArticles(String authHeader) {
+        UserEntity user = toolsAuthorisationEndPoint.getUserFromHeader(authHeader);
+        return articleRepository.findByIsFrontPageTrueAndSupprimedFalseOrderByDateCreationDesc()
+                .stream()
+                .filter(s -> toolsAuthorisationEndPoint.CanReadSection(s.getSection(), user))
+                .map(articleMapper::toDAO)
+                .toList();
+    }
+
     public List<ArticleDAO> getArticlesBySection(Long idSection, String authHeader) {
 
         if (!toolsAuthorisationEndPoint.CanReadThisSection(authHeader, idSection)) {

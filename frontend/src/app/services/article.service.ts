@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
+import { catchError, switchMap } from 'rxjs/operators';
 import { ArticleResponse } from '../model/article-response.model';
 import { environment } from '../../environments/environment';
 
@@ -21,6 +22,19 @@ export class ArticleService {
   getRecentArticles(max: number): Observable<ArticleResponse[]> {
 
     return this.http.get<ArticleResponse[]>(`${this.apiUrl}/articles/recents?limit=${max}`);
+  }
+
+  getFrontPageArticles(): Observable<ArticleResponse[]> {
+    return this.http.get<ArticleResponse[]>(`${this.apiUrl}/articles/frontPage`);
+  }
+
+  getAccueilArticles(recentLimit = 3): Observable<ArticleResponse[]> {
+    return this.getFrontPageArticles().pipe(
+      switchMap(articles => articles.length > 0
+        ? of(articles)
+        : this.getRecentArticles(recentLimit)),
+      catchError(() => this.getRecentArticles(recentLimit))
+    );
   }
 
   getArticles(): Observable<ArticleResponse[]> {

@@ -15,12 +15,13 @@ import { ArticleService } from '../../services/article.service';
   styleUrl: './accueil-page.component.css'
 })
 export class AccueilPageComponent {
-  articleService = inject(ArticleService);
+  private readonly articleService = inject(ArticleService);
+  private readonly cdr = inject(ChangeDetectorRef);
+
   articles: ArticleResponse[] = [];
 
-  constructor(private cdr: ChangeDetectorRef) {
-    this.articleService.getRecentArticles(3).subscribe((articles) => {
-      console.log('Articles recents reçus:', articles);
+  constructor() {
+    this.articleService.getAccueilArticles(3).subscribe((articles) => {
       this.articles = articles;
       this.cdr.detectChanges();
     });
@@ -43,5 +44,3 @@ export class AccueilPageComponent {
     this.cdr.detectChanges();
   }
 }
-
-

@@ -27,6 +27,7 @@ export class FileArticle {
 
   @Input() idSection: number | null = null;
   @Input() section: SectionResponse | null = null;
+  @Input() showPinButton = true;
   @Output() articleSaved = new EventEmitter<ArticleModel>();
   @Output() articleDeleted = new EventEmitter<string>();
 

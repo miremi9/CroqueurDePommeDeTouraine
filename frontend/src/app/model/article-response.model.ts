@@ -10,6 +10,7 @@ export interface ArticleResponse {
   supprimed?: boolean;
   idIllustrationDAOS?: string[]; // Liste de UUID sous forme de chaînes
   isPinned?: boolean;
+  isFrontPage?: boolean;
 }
 
 export interface IllustrationResponse {

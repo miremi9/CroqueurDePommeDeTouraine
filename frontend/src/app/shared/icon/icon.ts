@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 
 export type IconName =
   | 'star'
+  | 'pin'
   | 'edit'
   | 'delete'
   | 'download';

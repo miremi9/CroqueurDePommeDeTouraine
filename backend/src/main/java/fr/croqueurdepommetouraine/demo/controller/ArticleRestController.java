@@ -34,6 +34,12 @@ public class ArticleRestController {
         return this.articleBusiness.getRecentArticles(limit, authHeader);
     }
 
+    @GetMapping("/frontPage")
+    public List<ArticleDAO> getFrontPageArticles(
+            @RequestHeader(value = "Authorization", required = false) String authHeader) {
+        return this.articleBusiness.getFrontPageArticles(authHeader);
+    }
+
     @GetMapping("/bySection")
     public ResponseEntity<?> getArticlesBySection(@RequestParam(value = "idSection") Long idSection,
                                                   @RequestHeader(value = "Authorization", required = false) String authHeader) {
