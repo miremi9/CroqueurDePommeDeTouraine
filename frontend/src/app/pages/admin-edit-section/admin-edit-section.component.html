@@ -21,12 +21,12 @@
         <th>Path</th>
         <th>Parent</th>
         <th>Type</th>
-        <th *ngFor="let role of roleKeys">{{ role }}</th>
+        <th *ngFor="let role of roleKeys; trackBy: trackByRole">{{ role }}</th>
         <th>Actions</th>
       </tr>
     </thead>
     <tbody>
-      <ng-container *ngFor="let section of displayedSections">
+      <ng-container *ngFor="let section of displayedSections; trackBy: trackBySectionId">
         <!-- Ligne Lecture -->
         <tr>
           <td>
@@ -46,21 +46,21 @@
           <td>
             <select
               [(ngModel)]="section.idParent"
-              [disabled]="isSectionParent(section.idSection)"
+              [disabled]="parentSectionIds.has(section.idSection)"
               style="padding: 0.3rem 0.4rem; width: 100%; box-sizing: border-box;"
             >
               <option [ngValue]="null">Aucun parent</option>
-              <option *ngFor="let parent of getAvailableParentSections(section.idSection)" [ngValue]="parent.idSection">
+              <option *ngFor="let parent of (parentOptionsBySectionId.get(section.idSection) || [])" [ngValue]="parent.idSection">
                 {{ parent.nom }}
               </option>
             </select>
           </td>
           <td>Lecture</td>
-          <td *ngFor="let role of roleKeys" class="center">
+          <td *ngFor="let role of roleKeys; trackBy: trackByRole" class="center">
             <input
               type="checkbox"
-              [checked]="hasRoleCanRead(section, role)"
-              (change)="onToggleCanRead(section, role, $any($event.target).checked)"
+              [checked]="hasCanRead(role, section)"
+              (change)="toggleCanRead(role, $any($event.target).checked, section)"
             />
           </td>
           <td><!-- pas d'action spécifique sur la ligne Lecture --></td>
@@ -72,13 +72,13 @@
           <td></td>
           <td></td>
           <td>Écriture</td>
-          <td *ngFor="let role of roleKeys" class="center">
+          <td *ngFor="let role of roleKeys; trackBy: trackByRole" class="center">
             <input
               type="checkbox"
-              [checked]="hasRoleCanWrite(section, role)"
-              [disabled]="isAdminRole(role)"
-              [class.disabled-checkbox]="isAdminRole(role)"
-              (change)="onToggleCanWrite(section, role, $any($event.target).checked)"
+              [checked]="hasCanWrite(role, section)"
+              [disabled]="isWriteRoleLocked(role)"
+              [class.disabled-checkbox]="isWriteRoleLocked(role)"
+              (change)="toggleCanWrite(role, $any($event.target).checked, section)"
             />
           </td>
           <td>
@@ -117,17 +117,17 @@
             style="padding: 0.3rem 0.4rem; width: 100%; box-sizing: border-box;"
           >
             <option [ngValue]="null">Aucun parent</option>
-            <option *ngFor="let parent of getAvailableParentSections(-1)" [ngValue]="parent.idSection">
+            <option *ngFor="let parent of parentOptionsForCreate" [ngValue]="parent.idSection">
               {{ parent.nom }}
             </option>
           </select>
         </td>
         <td>Lecture</td>
-        <td *ngFor="let role of roleKeys" class="center">
+        <td *ngFor="let role of roleKeys; trackBy: trackByRole" class="center">
           <input
             type="checkbox"
-            [checked]="hasNewRoleCanRead(role)"
-            (change)="toggleNewRoleCanRead(role, $any($event.target).checked)"
+            [checked]="hasCanRead(role)"
+            (change)="toggleCanRead(role, $any($event.target).checked)"
           />
         </td>
         <td rowspan="2" style="vertical-align: middle; text-align: center;">
@@ -145,17 +145,35 @@
         <td></td>
         <td></td>
         <td>Écriture</td>
-        <td *ngFor="let role of roleKeys" class="center">
+        <td *ngFor="let role of roleKeys; trackBy: trackByRole" class="center">
           <input
             type="checkbox"
-            [checked]="hasNewRoleCanWrite(role)"
-            [disabled]="isAdminRole(role)"
-            [class.disabled-checkbox]="isAdminRole(role)"
-            (change)="toggleNewRoleCanWrite(role, $any($event.target).checked)"
+            [checked]="hasCanWrite(role)"
+            [disabled]="isWriteRoleLocked(role)"
+            [class.disabled-checkbox]="isWriteRoleLocked(role)"
+            (change)="toggleCanWrite(role, $any($event.target).checked)"
           />
         </td>
       </tr>
     </tbody>
   </table>
 </div>
+
+@if (showResultModal) {
+  <div class="modal__backdrop result-modal-backdrop" (click)="closeResultModal()"></div>
+  <div
+    class="modal__window result-modal"
+    [class.result-modal--error]="resultModalIsError"
+    [class.result-modal--success]="!resultModalIsError"
+    role="alertdialog"
+    aria-modal="true"
+    (click)="$event.stopPropagation()"
+  >
+    <h3 class="modal__title result-modal__title">{{ resultModalTitle }}</h3>
+    <p class="result-modal__message">{{ resultModalMessage }}</p>
+    <div class="modal__actions">
+      <button type="button" class="modal__btn modal__btn--primary" (click)="closeResultModal()">Fermer</button>
+    </div>
+  </div>
+}
 
